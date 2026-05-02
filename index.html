@@ -88,14 +88,24 @@ body{background:var(--bg);color:var(--gray1);font-family:'Noto Sans TC',sans-ser
 .no-class{padding:24px 0;text-align:center;font-size:14px;color:var(--gray4)}
 
 /* ══ SETTINGS ══ */
-.sg-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
-.sg-card{background:var(--white);border-radius:16px;padding:16px;border:1px solid var(--border);box-shadow:var(--shadow-sm)}
-.sg-label{font-size:11px;color:var(--gray3);font-weight:600;line-height:1.5;margin-bottom:10px;letter-spacing:0.2px}
-.sg-row{display:flex;align-items:center;gap:6px}
-.sg-btn{width:40px;height:40px;border-radius:10px;border:1.5px solid var(--border2);background:var(--bg);color:var(--gray2);font-size:20px;font-family:'DM Mono',monospace;display:flex;align-items:center;justify-content:center;cursor:pointer;flex-shrink:0;transition:all 0.1s;-webkit-tap-highlight-color:transparent}
+.sg-grid{display:flex;flex-direction:column;gap:8px}
+.sg-card{
+  background:var(--white);border-radius:14px;
+  padding:14px 16px;border:1px solid var(--border);box-shadow:var(--shadow-sm);
+  display:flex;align-items:center;gap:12px;
+}
+.sg-label{flex:1;font-size:13px;color:var(--gray2);font-weight:600;line-height:1.3}
+.sg-label-sub{font-size:11px;color:var(--gray4);font-weight:400;display:block;margin-top:1px}
+.sg-row{display:flex;align-items:center;gap:6px;flex-shrink:0}
+.sg-btn{
+  width:40px;height:40px;border-radius:10px;border:1.5px solid var(--border2);
+  background:var(--bg);color:var(--gray2);font-size:20px;font-family:'DM Mono',monospace;
+  display:flex;align-items:center;justify-content:center;cursor:pointer;flex-shrink:0;
+  transition:all 0.1s;-webkit-tap-highlight-color:transparent;
+}
 .sg-btn:active{background:var(--gray1);color:#fff;border-color:var(--gray1);transform:scale(0.93)}
-.sg-val{font-family:'DM Mono',monospace;font-size:24px;font-weight:500;color:var(--gray1);flex:1;text-align:center}
-.sg-unit{font-size:12px;color:var(--gray4)}
+.sg-val{font-family:'DM Mono',monospace;font-size:22px;font-weight:500;color:var(--gray1);width:36px;text-align:center}
+.sg-unit{font-size:11px;color:var(--gray4);width:10px}
 
 /* ══ ALERT ══ */
 .alert{border-radius:14px;padding:14px 18px;font-size:14px;line-height:1.7;display:flex;align-items:flex-start;gap:10px;border-left:4px solid}
@@ -172,9 +182,20 @@ body{background:var(--bg);color:var(--gray1);font-family:'Noto Sans TC',sans-ser
 .tl-desc{font-size:12px;color:var(--gray3);line-height:1.6;margin-top:2px}
 .tl-desc strong{color:var(--gray2);font-weight:600}
 
-/* ══ DROPDOWN CARD ══ */
-.sg-card-full{grid-column:1/-1}
-.sg-dropdown-wrap{position:relative;margin-top:10px}
+/* ══ EARLY ARRIVAL CARD ══ */
+.sg-card-early{flex-wrap:wrap;gap:10px}
+.sg-card-early .sg-label{flex-basis:100%;margin-bottom:0}
+.sg-early-opts{
+  display:flex;gap:6px;flex:1;
+}
+.sg-opt{
+  flex:1;padding:9px 2px;border-radius:9px;
+  border:1.5px solid var(--border2);background:var(--bg);
+  font-size:11px;font-weight:700;color:var(--gray2);
+  text-align:center;cursor:pointer;transition:all 0.12s;
+  -webkit-tap-highlight-color:transparent;white-space:nowrap;
+}
+.sg-opt.active{background:var(--gray1);color:#fff;border-color:var(--gray1)}
 .sg-dropdown{
   width:100%;appearance:none;-webkit-appearance:none;
   background:var(--bg);border:1.5px solid var(--border2);
@@ -188,15 +209,24 @@ body{background:var(--bg);color:var(--gray1);font-family:'Noto Sans TC',sans-ser
   position:absolute;right:14px;top:50%;transform:translateY(-50%);
   pointer-events:none;font-size:14px;color:var(--gray3);
 }
-.sg-dropdown-opts{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
-.sg-opt{
-  flex:1;min-width:52px;padding:8px 4px;border-radius:10px;
-  border:1.5px solid var(--border2);background:var(--bg);
-  font-size:14px;font-weight:700;color:var(--gray2);
-  text-align:center;cursor:pointer;transition:all 0.12s;
-  -webkit-tap-highlight-color:transparent;font-family:'DM Mono',monospace;
+
+/* ══ TIP BUTTON ══ */
+.tip-btn-wrap{margin-top:12px;display:flex;flex-direction:column;gap:8px}
+.tip-btn{
+  display:flex;align-items:center;justify-content:space-between;
+  width:100%;padding:16px 20px;
+  background:var(--gray1);color:#fff;
+  border:none;border-radius:16px;cursor:pointer;
+  text-align:left;text-decoration:none;
+  box-shadow:var(--shadow-md);
+  transition:background 0.12s,transform 0.1s;
+  -webkit-tap-highlight-color:transparent;
 }
-.sg-opt.active{background:var(--gray1);color:#fff;border-color:var(--gray1)}
+.tip-btn:active{background:#444;transform:scale(0.98)}
+.tip-btn-left{display:flex;flex-direction:column;gap:3px}
+.tip-btn-eyebrow{font-size:10px;color:rgba(255,255,255,0.5);font-weight:700;letter-spacing:1px;text-transform:uppercase}
+.tip-btn-main{font-size:16px;font-weight:700;color:#fff}
+.tip-btn-sub{font-size:12px;color:rgba(255,255,255,0.6);margin-top:1px}
 
 /* ══ FOOTER ══ */
 .footer{padding:24px 0 0;text-align:center;font-size:11px;color:var(--gray4);line-height:2}
@@ -230,36 +260,65 @@ body{background:var(--bg);color:var(--gray1);font-family:'Noto Sans TC',sans-ser
   <div class="sec-hd"><div class="sec-step">2</div><div class="sec-title">時間設定</div><div class="sec-hr"></div></div>
   <div class="sg-grid">
     <div class="sg-card" id="cfg-homeToStation">
-      <div class="sg-label">藝術清園 → 台南站（騎車）</div>
-      <div class="sg-row"><button class="sg-btn" onclick="adj('homeToStation',-1)">−</button><span class="sg-val" id="homeToStation-val">15</span><span class="sg-unit">分</span><button class="sg-btn" onclick="adj('homeToStation',1)">+</button></div>
+      <div class="sg-label">藝術清園 → 台南站
+        <span class="sg-label-sub">騎機車出發時間</span>
+      </div>
+      <div class="sg-row">
+        <button class="sg-btn" onclick="adj('homeToStation',-1)">−</button>
+        <span class="sg-val" id="homeToStation-val">20</span>
+        <span class="sg-unit">分</span>
+        <button class="sg-btn" onclick="adj('homeToStation',1)">+</button>
+      </div>
     </div>
     <div class="sg-card" id="cfg-boardBuffer">
-      <div class="sg-label">台南站候車緩衝時間</div>
-      <div class="sg-row"><button class="sg-btn" onclick="adj('boardBuffer',-1)">−</button><span class="sg-val" id="boardBuffer-val">5</span><span class="sg-unit">分</span><button class="sg-btn" onclick="adj('boardBuffer',1)">+</button></div>
+      <div class="sg-label">台南站候車緩衝
+        <span class="sg-label-sub">提前到站等車時間</span>
+      </div>
+      <div class="sg-row">
+        <button class="sg-btn" onclick="adj('boardBuffer',-1)">−</button>
+        <span class="sg-val" id="boardBuffer-val">10</span>
+        <span class="sg-unit">分</span>
+        <button class="sg-btn" onclick="adj('boardBuffer',1)">+</button>
+      </div>
     </div>
     <div class="sg-card" id="cfg-bikeToYoga">
-      <div class="sg-label">善化站 → 瑜伽日記（腳踏車）</div>
-      <div class="sg-row"><button class="sg-btn" onclick="adj('bikeToYoga',-1)">−</button><span class="sg-val" id="bikeToYoga-val">8</span><span class="sg-unit">分</span><button class="sg-btn" onclick="adj('bikeToYoga',1)">+</button></div>
-    </div>
-    <div class="sg-card" id="cfg-stationToHome">
-      <div class="sg-label">藝術清園 → 台南站接 Betty（騎車）</div>
-      <div class="sg-row"><button class="sg-btn" onclick="adj('stationToHome',-1)">−</button><span class="sg-val" id="stationToHome-val">15</span><span class="sg-unit">分</span><button class="sg-btn" onclick="adj('stationToHome',1)">+</button></div>
-    </div>
-    <div class="sg-card" id="cfg-bikeToAG" style="display:none;grid-column:1/-1">
-      <div class="sg-label">藝術清園 → 崇善路 AG 紅光瑜伽（騎車）</div>
-      <div class="sg-row"><button class="sg-btn" onclick="adj('bikeToAG',-1)">−</button><span class="sg-val" id="bikeToAG-val">10</span><span class="sg-unit">分</span><button class="sg-btn" onclick="adj('bikeToAG',1)">+</button></div>
-    </div>
-    <div class="sg-card sg-card-full" id="cfg-earlyArrival">
-      <div class="sg-label">⏰ Betty 需提前抵達教室（預習時間）</div>
-      <div class="sg-dropdown-opts" id="earlyOpts">
-        <div class="sg-opt sg-early active" onclick="setEarly(0)">不需要</div>
-        <div class="sg-opt sg-early" onclick="setEarly(15)">15 分</div>
-        <div class="sg-opt sg-early" onclick="setEarly(30)">30 分</div>
-        <div class="sg-opt sg-early" onclick="setEarly(45)">45 分</div>
-        <div class="sg-opt sg-early" onclick="setEarly(60)">60 分</div>
-        <div class="sg-opt sg-early" onclick="setEarly(90)">1.5 小時</div>
+      <div class="sg-label">善化站 → 瑜伽日記
+        <span class="sg-label-sub">YouBike 腳踏車時間</span>
       </div>
-      <div id="earlyDisplay" style="margin-top:8px;font-size:13px;color:var(--gray3)">不需要提前抵達</div>
+      <div class="sg-row">
+        <button class="sg-btn" onclick="adj('bikeToYoga',-1)">−</button>
+        <span class="sg-val" id="bikeToYoga-val">15</span>
+        <span class="sg-unit">分</span>
+        <button class="sg-btn" onclick="adj('bikeToYoga',1)">+</button>
+      </div>
+    </div>
+    <div class="sg-card sg-card-early" id="cfg-earlyArrival">
+      <div class="sg-label">Betty 提前抵達預習
+        <span class="sg-label-sub">提前到教室的時間</span>
+      </div>
+      <div class="sg-early-opts" id="earlyOpts">
+        <div class="sg-opt sg-early active" onclick="setEarly(0)">不需要</div>
+        <div class="sg-opt sg-early" onclick="setEarly(15)">15分</div>
+        <div class="sg-opt sg-early" onclick="setEarly(30)">30分</div>
+        <div class="sg-opt sg-early" onclick="setEarly(45)">45分</div>
+        <div class="sg-opt sg-early" onclick="setEarly(60)">60分</div>
+        <div class="sg-opt sg-early" onclick="setEarly(90)">1.5時</div>
+      </div>
+    </div>
+    <!-- 藝術清園 → 台南站接 Betty 預設 20 分，不顯示 -->
+    <div id="cfg-stationToHome" style="display:none">
+      <span id="stationToHome-val" style="display:none">20</span>
+    </div>
+    <div class="sg-card" id="cfg-bikeToAG" style="display:none">
+      <div class="sg-label">藝術清園 → 崇善路 AG
+        <span class="sg-label-sub">騎機車時間</span>
+      </div>
+      <div class="sg-row">
+        <button class="sg-btn" onclick="adj('bikeToAG',-1)">−</button>
+        <span class="sg-val" id="bikeToAG-val">10</span>
+        <span class="sg-unit">分</span>
+        <button class="sg-btn" onclick="adj('bikeToAG',1)">+</button>
+      </div>
     </div>
   </div>
 
@@ -273,6 +332,7 @@ body{background:var(--bg);color:var(--gray1);font-family:'Noto Sans TC',sans-ser
   <div id="goSection">
     <div class="sec-hd"><div class="sec-step" id="goSecNum">3</div><div class="sec-title">去程規劃</div><div class="sec-hr"></div></div>
     <div class="tl" id="goTimeline"><div class="no-class">請選擇課程</div></div>
+    <div id="tipBtnWrap"></div>
   </div>
 
   <div id="returnSection" style="display:none">
@@ -352,7 +412,8 @@ const RETURN=[
   {dep:'05:51',arr:'06:10',type:'區間'},{dep:'06:09',arr:'06:28',type:'區間'},{dep:'06:28',arr:'06:49',type:'區間'},{dep:'06:41',arr:'07:00',type:'區間'},{dep:'07:01',arr:'07:22',type:'區間'},{dep:'07:12',arr:'07:31',type:'區間'},{dep:'07:32',arr:'07:53',type:'區間'},{dep:'07:41',arr:'08:00',type:'區間'},{dep:'08:04',arr:'08:20',type:'區間快'},{dep:'08:16',arr:'08:37',type:'區間'},{dep:'08:47',arr:'09:08',type:'區間'},{dep:'09:01',arr:'09:22',type:'區間'},{dep:'09:22',arr:'09:43',type:'區間'},{dep:'09:33',arr:'09:54',type:'區間'},{dep:'10:01',arr:'10:22',type:'區間'},{dep:'10:10',arr:'10:26',type:'區間快'},{dep:'10:30',arr:'10:51',type:'區間'},{dep:'10:45',arr:'11:01',type:'區間快'},{dep:'11:05',arr:'11:26',type:'區間'},{dep:'11:16',arr:'11:32',type:'區間快'},{dep:'11:30',arr:'11:51',type:'區間'},{dep:'11:56',arr:'12:12',type:'區間快'},{dep:'12:08',arr:'12:29',type:'區間'},{dep:'12:37',arr:'12:59',type:'區間'},{dep:'12:56',arr:'13:18',type:'區間'},{dep:'13:30',arr:'13:52',type:'區間'},{dep:'13:55',arr:'14:23',type:'區間'},{dep:'14:18',arr:'14:40',type:'區間'},{dep:'14:34',arr:'14:55',type:'區間'},{dep:'14:47',arr:'15:02',type:'莒光'},{dep:'14:56',arr:'15:23',type:'區間'},{dep:'15:33',arr:'15:54',type:'區間'},{dep:'15:42',arr:'16:04',type:'區間'},{dep:'16:05',arr:'16:21',type:'自強'},{dep:'16:14',arr:'16:35',type:'區間'},{dep:'16:37',arr:'16:58',type:'區間'},{dep:'16:52',arr:'17:12',type:'區間快'},{dep:'17:06',arr:'17:28',type:'區間'},{dep:'17:14',arr:'17:35',type:'區間'},{dep:'17:28',arr:'17:46',type:'區間快'},{dep:'17:39',arr:'18:00',type:'區間'},{dep:'18:00',arr:'18:18',type:'區間快'},{dep:'18:07',arr:'18:28',type:'區間'},{dep:'18:26',arr:'18:48',type:'區間'},{dep:'18:32',arr:'18:51',type:'區間快'},{dep:'18:50',arr:'19:02',type:'自強3000'},{dep:'19:10',arr:'19:38',type:'區間'},{dep:'19:24',arr:'19:43',type:'區間快'},{dep:'19:41',arr:'20:02',type:'區間'},{dep:'19:48',arr:'20:10',type:'區間'},{dep:'20:06',arr:'20:19',type:'自強'},{dep:'20:09',arr:'20:31',type:'區間'},{dep:'20:32',arr:'20:53',type:'區間'},{dep:'20:50',arr:'21:18',type:'區間'},{dep:'21:07',arr:'21:34',type:'區間'},{dep:'21:47',arr:'22:02',type:'莒光'},{dep:'21:53',arr:'22:15',type:'區間'},{dep:'22:05',arr:'22:33',type:'區間'},{dep:'22:33',arr:'22:53',type:'區間'},{dep:'23:06',arr:'23:19',type:'自強'},{dep:'23:10',arr:'23:32',type:'區間'},{dep:'23:37',arr:'23:59',type:'區間'},
 ];
 
-const CFG={homeToStation:15,boardBuffer:5,bikeToYoga:8,stationToHome:15,bikeToAG:10,earlyArrival:5};
+// stationToHome 預設 20 分（接 Betty 回家），欄位隱藏，資料仍保留計算用
+const CFG={homeToStation:20,boardBuffer:10,bikeToYoga:15,stationToHome:20,bikeToAG:10,earlyArrival:5};
 let selDate=todayStr(),selClass=null,selTrain=null,cd=30;
 
 function todayStr(){const d=new Date();return`${d.getFullYear()}-${p2(d.getMonth()+1)}-${p2(d.getDate())}`}
@@ -365,13 +426,9 @@ function adj(k,d){CFG[k]=Math.max(1,Math.min(99,CFG[k]+d));document.getElementBy
 function setEarly(val){
   CFG.earlyArrival=val;
   document.querySelectorAll('.sg-early').forEach(b=>{
-    const v=b.textContent==='不需要'?0:b.textContent==='1.5 小時'?90:parseInt(b.textContent);
+    const v=b.textContent==='不需要'?0:b.textContent==='1.5時'?90:parseInt(b.textContent);
     b.classList.toggle('active',v===val);
   });
-  const display=document.getElementById('earlyDisplay');
-  if(val===0) display.textContent='不需要提前抵達';
-  else if(val===90) display.textContent='Betty 將提前 1.5 小時（90 分鐘）抵達教室預習';
-  else display.textContent=`Betty 將提前 ${val} 分鐘抵達教室預習`;
   selTrain=null;compute();
 }
 
@@ -523,6 +580,20 @@ function renderGo(classMin,now,isToday){
   const yogaNote=arrYoga<=classMin?`${earlyNote} ✓`:`晚 ${arrYoga-classMin} 分鐘 ✗`;
   html+=tlS('ic-yoga','🧘',arrYoga<=classMin?'ok':'err',toHM(arrStation),yogaNote,`<span class="chip chip-yoga">上課</span>`,`<strong>${selClass.name}</strong>${CFG.earlyArrival>0?`<br>上課時間 ${toHM(classMin)}`:''}`,true);
   document.getElementById('goTimeline').innerHTML=html;
+
+  // 即時查詢按鈕
+  document.getElementById('tipBtnWrap').innerHTML=`
+    <div class="tip-btn-wrap">
+      <a class="tip-btn" href="https://tip.railway.gov.tw" target="_blank" rel="noopener">
+        <div class="tip-btn-left">
+          <div class="tip-btn-eyebrow">台鐵官網 · 即時資訊</div>
+          <div class="tip-btn-main">查詢台南 → 善化 時刻 / 票價 / 誤點</div>
+          <div class="tip-btn-sub">${selDate} ・ ${t.type} ・ 台南 ${t.dep} → 善化 ${t.arr}</div>
+        </div>
+        <div class="tip-btn-arrow">→</div>
+      </a>
+    </div>
+  `;
   let a='';
   if(isToday){
     if(ml<0)a=`<div class="alert alert-err"><span class="alert-icon">⚠</span>已超過最晚出發時間，建議改搭下一班。</div>`;
@@ -536,6 +607,7 @@ function compute(){
   const tcfgs=['cfg-homeToStation','cfg-boardBuffer','cfg-bikeToYoga','cfg-stationToHome'];
   if(!selClass){
     document.getElementById('goTimeline').innerHTML='<div class="no-class">請選擇課程</div>';
+    document.getElementById('tipBtnWrap').innerHTML='';
     ['trainSelectorSection','returnSection'].forEach(id=>document.getElementById(id).style.display='none');
     document.getElementById('alertBox').innerHTML='';
     document.getElementById('goSecNum').textContent='3';
@@ -556,6 +628,7 @@ function compute(){
     html+=tlS('ic-home','🏠',hc,toHM(leave),mn,`<span class="chip chip-walk">騎機車</span>`,`從<strong>藝術清園</strong>出發<br>→ 崇善路 435 號 AG 紅光瑜伽`,false);
     html+=tlS('ic-yoga','🧘','ok',toHM(arrive),`提前 ${buf} 分鐘抵達預習 ✓`,`<span class="chip chip-yoga">上課</span>`,`<strong>AG 紅光瑜伽</strong>${buf>0?`<br>上課時間 ${toHM(classMin)}`:''}`,true);
     document.getElementById('goTimeline').innerHTML=html;
+    document.getElementById('tipBtnWrap').innerHTML='';
     let a='';
     if(isToday){
       if(ml<0)a=`<div class="alert alert-err"><span class="alert-icon">⚠</span>已超過最晚出發時間。</div>`;

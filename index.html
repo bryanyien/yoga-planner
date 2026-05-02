@@ -2,509 +2,493 @@
 <html lang="zh-TW">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
-<title>課程出行規劃</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Betty 課程出行</title>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;400;500;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 :root{
-  --bg:#f7f6f3;
+  --bg:#f7f7f7;
   --white:#ffffff;
-  --card:#ffffff;
-  --border:#e8e5df;
-  --border2:#d5d1c8;
-  --accent:#2d6a4f;
-  --accent-light:#e8f5ef;
-  --amber:#b5651d;
-  --amber-light:#fdf3e7;
-  --red:#c0392b;
-  --red-light:#fdecea;
-  --blue:#1a4a7a;
-  --blue-light:#eaf1fb;
-  --muted:#aaa89f;
-  --sub:#888680;
-  --text:#2a2925;
-  --text2:#4a4842;
+  --border:#ebebeb;
+  --border2:#dddddd;
+  --shadow-sm:0 1px 2px rgba(0,0,0,0.08);
+  --shadow-md:0 2px 8px rgba(0,0,0,0.10);
+  --accent:#008489;
+  --accent-bg:#e8f7f7;
+  --accent-dark:#006166;
+  --rose:#FF5A5F;
+  --rose-bg:#fff0f0;
+  --green:#00885A;
+  --green-bg:#e6f5ef;
+  --amber:#C07800;
+  --amber-bg:#fef6e4;
+  --gray1:#222222;
+  --gray2:#484848;
+  --gray3:#767676;
+  --gray4:#b0b0b0;
+  --gray5:#ebebeb;
 }
-body{background:var(--bg);color:var(--text);font-family:'Noto Sans TC',sans-serif;min-height:100vh;padding-bottom:48px}
+html{-webkit-text-size-adjust:100%}
+body{background:var(--bg);color:var(--gray1);font-family:'Noto Sans TC',sans-serif;min-height:100vh;padding-bottom:64px;font-size:15px}
 
-/* TOP BAR */
-.topbar{background:var(--white);border-bottom:1px solid var(--border);padding:12px 16px;position:sticky;top:0;z-index:100;display:flex;align-items:center;justify-content:space-between}
-.topbar-left{display:flex;flex-direction:column;gap:1px}
-.topbar-title{font-size:13px;font-weight:700;color:var(--accent);letter-spacing:0.3px}
-.topbar-sub{font-size:10px;color:var(--muted)}
-.topbar-clock{font-family:'DM Mono',monospace;font-size:20px;font-weight:500;color:var(--text);letter-spacing:1px}
+/* ══ TOP BAR ══ */
+.topbar{background:var(--white);border-bottom:1px solid var(--border);padding:0 20px;position:sticky;top:0;z-index:100}
+.topbar-inner{display:flex;align-items:center;justify-content:space-between;padding:14px 0 12px;gap:12px}
+.tb-left{display:flex;flex-direction:column;gap:2px}
+.tb-eyebrow{font-size:11px;color:var(--rose);font-weight:700;letter-spacing:0.8px;text-transform:uppercase}
+.tb-title{font-size:18px;font-weight:700;color:var(--gray1)}
+.tb-right{display:flex;flex-direction:column;align-items:flex-end;gap:4px}
+.tb-clock{font-family:'DM Mono',monospace;font-size:34px;font-weight:500;color:var(--gray1);line-height:1}
+.tb-refresh{display:flex;align-items:center;gap:5px}
+.tb-rlabel{font-size:10px;color:var(--gray4)}
+.tb-bar-wrap{width:40px;height:2px;background:var(--gray5);border-radius:2px;overflow:hidden}
+.tb-bar{height:100%;background:var(--accent);border-radius:2px;transition:width 1s linear}
+.tb-sec{font-family:'DM Mono',monospace;font-size:10px;color:var(--gray4);min-width:18px;text-align:right}
 
-/* WEEK STRIP */
-.week-strip{background:var(--white);border-bottom:1px solid var(--border);padding:10px 16px;display:flex;gap:6px;overflow-x:auto;scrollbar-width:none}
+/* ══ WEEK STRIP ══ */
+.week-strip{background:var(--white);border-bottom:1px solid var(--border);padding:12px 16px;display:flex;gap:4px;overflow-x:auto;scrollbar-width:none}
 .week-strip::-webkit-scrollbar{display:none}
-.day-pill{flex-shrink:0;display:flex;flex-direction:column;align-items:center;gap:3px;padding:7px 10px;border-radius:10px;cursor:pointer;transition:all 0.15s;border:1px solid transparent;min-width:46px}
-.day-pill:hover{background:var(--bg)}
-.day-pill.active{background:var(--accent);border-color:var(--accent)}
-.day-pill.has-class{border-color:var(--accent);background:var(--accent-light)}
-.day-pill.active.has-class{background:var(--accent)}
-.day-wd{font-size:10px;color:var(--sub);font-weight:500}
-.day-pill.active .day-wd{color:rgba(255,255,255,0.8)}
-.day-num{font-family:'DM Mono',monospace;font-size:16px;font-weight:500;color:var(--text)}
+.day-pill{flex-shrink:0;display:flex;flex-direction:column;align-items:center;gap:4px;padding:8px 10px;border-radius:12px;cursor:pointer;transition:all 0.12s;border:1.5px solid transparent;min-width:46px;-webkit-tap-highlight-color:transparent}
+.day-pill.has-class{border-color:var(--border2)}
+.day-pill.active{background:var(--gray1);border-color:var(--gray1)}
+.day-wd{font-size:10px;color:var(--gray3);font-weight:600;letter-spacing:0.5px;text-transform:uppercase}
+.day-pill.active .day-wd{color:rgba(255,255,255,0.55)}
+.day-num{font-family:'DM Mono',monospace;font-size:17px;font-weight:500;color:var(--gray2)}
 .day-pill.active .day-num{color:#fff}
-.day-dot{width:4px;height:4px;border-radius:50%;background:var(--accent)}
-.day-pill.active .day-dot{background:rgba(255,255,255,0.7)}
+.day-dot{width:4px;height:4px;border-radius:50%;background:var(--rose)}
+.day-pill.active .day-dot{background:rgba(255,255,255,0.5)}
 
-/* SETTINGS */
-.settings-wrap{padding:12px 16px;display:grid;grid-template-columns:1fr 1fr;gap:8px}
-.setting-card{background:var(--white);border:1px solid var(--border);border-radius:12px;padding:10px 12px}
-.setting-label{font-size:10px;color:var(--muted);margin-bottom:6px;line-height:1.3}
-.setting-row{display:flex;align-items:center;gap:6px}
-.adj-btn{background:var(--bg);border:1px solid var(--border2);color:var(--text2);width:28px;height:28px;border-radius:7px;font-size:15px;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:all 0.1s}
-.adj-btn:active{background:var(--accent);color:#fff;border-color:var(--accent)}
-.adj-val{font-family:'DM Mono',monospace;font-size:17px;font-weight:500;color:var(--text);flex:1;text-align:center}
-.adj-unit{font-size:11px;color:var(--muted)}
+/* ══ BODY ══ */
+.body{padding:0 16px}
 
-/* CLASS CARDS STRIP */
-.class-strip{padding:0 16px 12px}
-.strip-label{font-size:10px;color:var(--muted);letter-spacing:1.5px;font-weight:700;text-transform:uppercase;margin-bottom:8px;padding-top:12px}
-.class-cards{display:flex;flex-direction:column;gap:6px}
-.class-card{background:var(--white);border:1px solid var(--border);border-radius:12px;padding:12px 14px;cursor:pointer;transition:all 0.15s;display:flex;align-items:center;gap:12px}
-.class-card:hover{border-color:var(--accent);background:var(--accent-light)}
-.class-card.selected{border-color:var(--accent);background:var(--accent-light);box-shadow:0 0 0 2px var(--accent-light)}
-.class-time-badge{font-family:'DM Mono',monospace;font-size:19px;font-weight:500;color:var(--text);min-width:50px}
-.class-info{flex:1}
-.class-name{font-size:13px;font-weight:700;color:var(--text);margin-bottom:1px}
-.class-dur{font-size:11px;color:var(--sub)}
-.class-select-indicator{width:20px;height:20px;border-radius:50%;border:1.5px solid var(--border2);display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:all 0.15s}
-.class-card.selected .class-select-indicator{background:var(--accent);border-color:var(--accent)}
-.check-mark{width:10px;height:10px;display:none}
-.class-card.selected .check-mark{display:block;color:#fff;font-size:10px}
+/* ══ SECTION HEADER ══ */
+.sec-hd{display:flex;align-items:center;gap:10px;padding:20px 0 10px}
+.sec-step{width:24px;height:24px;border-radius:50%;background:var(--gray1);color:#fff;font-size:11px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.sec-title{font-size:12px;font-weight:700;color:var(--gray2);letter-spacing:0.5px;text-transform:uppercase}
+.sec-hr{flex:1;height:1px;background:var(--border)}
 
-.no-class{text-align:center;padding:20px 0;font-size:13px;color:var(--muted)}
+/* ══ CLASS CARDS ══ */
+.class-list{display:flex;flex-direction:column;gap:8px}
+.cc{background:var(--white);border-radius:16px;padding:16px 18px;display:flex;align-items:center;cursor:pointer;border:1.5px solid var(--border);box-shadow:var(--shadow-sm);transition:all 0.12s;-webkit-tap-highlight-color:transparent}
+.cc:active{transform:scale(0.985)}
+.cc.sel{border-color:var(--gray1);box-shadow:var(--shadow-md)}
+.cc-time-col{display:flex;flex-direction:column;align-items:flex-start;min-width:64px}
+.cc-time{font-family:'DM Mono',monospace;font-size:22px;font-weight:500;color:var(--gray1);line-height:1}
+.cc-pill{display:inline-flex;align-items:center;gap:3px;font-size:10px;font-weight:700;padding:2px 7px;border-radius:20px;margin-top:5px;letter-spacing:0.3px}
+.pill-local{background:#e8f1fb;color:#1a4a7a}
+.pill-train{background:var(--accent-bg);color:var(--accent-dark)}
+.cc-sep{width:1px;height:40px;background:var(--border);margin:0 14px;flex-shrink:0}
+.cc-info{flex:1}
+.cc-end{font-size:11px;color:var(--gray4);font-weight:600;letter-spacing:0.3px;margin-bottom:2px}
+.cc-name{font-size:16px;font-weight:700;color:var(--gray1)}
+.cc-addr{font-size:12px;color:var(--gray3);margin-top:2px}
+.cc-check{width:24px;height:24px;border-radius:50%;border:1.5px solid var(--border2);display:flex;align-items:center;justify-content:center;font-size:11px;color:transparent;transition:all 0.12s;margin-left:12px;flex-shrink:0}
+.cc.sel .cc-check{background:var(--gray1);border-color:var(--gray1);color:#fff}
+.no-class{padding:24px 0;text-align:center;font-size:14px;color:var(--gray4)}
 
-/* DIVIDER */
-.divider{margin:0 16px;border:none;border-top:1px solid var(--border)}
+/* ══ SETTINGS ══ */
+.sg-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.sg-card{background:var(--white);border-radius:16px;padding:16px;border:1px solid var(--border);box-shadow:var(--shadow-sm)}
+.sg-label{font-size:11px;color:var(--gray3);font-weight:600;line-height:1.5;margin-bottom:10px;letter-spacing:0.2px}
+.sg-row{display:flex;align-items:center;gap:6px}
+.sg-btn{width:40px;height:40px;border-radius:10px;border:1.5px solid var(--border2);background:var(--bg);color:var(--gray2);font-size:20px;font-family:'DM Mono',monospace;display:flex;align-items:center;justify-content:center;cursor:pointer;flex-shrink:0;transition:all 0.1s;-webkit-tap-highlight-color:transparent}
+.sg-btn:active{background:var(--gray1);color:#fff;border-color:var(--gray1);transform:scale(0.93)}
+.sg-val{font-family:'DM Mono',monospace;font-size:24px;font-weight:500;color:var(--gray1);flex:1;text-align:center}
+.sg-unit{font-size:12px;color:var(--gray4)}
 
-/* TIMELINE */
-.timeline{padding:12px 16px 0}
-.tl-step{position:relative;padding-left:40px;padding-bottom:6px}
-.tl-dot{position:absolute;left:8px;top:4px;width:18px;height:18px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:9px;z-index:1}
-.tl-line{position:absolute;left:16px;top:22px;bottom:0;width:1px;background:var(--border2)}
-.tl-step:last-child .tl-line{display:none}
-.dot-home{background:var(--blue-light);border:1.5px solid var(--blue);color:var(--blue)}
-.dot-train{background:var(--accent-light);border:1.5px solid var(--accent);color:var(--accent)}
-.dot-bike{background:#fff8e1;border:1.5px solid #c49a00;color:#c49a00}
-.dot-class{background:#fce4ec;border:1.5px solid #c2185b;color:#c2185b}
+/* ══ ALERT ══ */
+.alert{border-radius:14px;padding:14px 18px;font-size:14px;line-height:1.7;display:flex;align-items:flex-start;gap:10px;border-left:4px solid}
+.alert-ok{background:var(--green-bg);border-color:var(--green);color:var(--green)}
+.alert-warn{background:var(--amber-bg);border-color:var(--amber);color:var(--amber)}
+.alert-err{background:var(--rose-bg);border-color:var(--rose);color:var(--rose)}
+.alert-icon{font-size:18px;flex-shrink:0;line-height:1.5}
 
-.tl-card{background:var(--white);border:1px solid var(--border);border-radius:12px;padding:11px 13px;transition:border-color 0.15s}
-.tl-card.c-green{border-color:#a8d8b9;background:var(--accent-light)}
-.tl-card.c-amber{border-color:#f0c987;background:var(--amber-light)}
-.tl-card.c-red{border-color:#e8a19a;background:var(--red-light)}
-.tl-card.c-blue{border-color:#a8c4e8;background:var(--blue-light)}
+/* ══ TRAIN OPTIONS ══ */
+.train-list{display:flex;flex-direction:column;gap:10px}
+.to{background:var(--white);border-radius:16px;border:1.5px solid var(--border);box-shadow:var(--shadow-sm);cursor:pointer;overflow:hidden;transition:all 0.12s;-webkit-tap-highlight-color:transparent}
+.to:active{transform:scale(0.985)}
+.to.sel{border-color:var(--gray1);box-shadow:var(--shadow-md)}
+.to.too-late{opacity:0.32;cursor:default}
 
-.tl-row{display:flex;align-items:flex-start;justify-content:space-between;gap:8px}
-.tl-time{font-family:'DM Mono',monospace;font-size:22px;font-weight:500;color:var(--text);line-height:1}
-.tl-time-note{font-size:11px;color:var(--sub);margin-top:2px}
-.tl-right{text-align:right;flex-shrink:0}
-.tl-badge{font-size:10px;padding:2px 7px;border-radius:8px;font-weight:700;display:inline-block;margin-bottom:3px}
-.b-train{background:#e8f5ef;color:var(--accent)}
-.b-bike{background:#fff8e1;color:#a07800}
-.b-walk{background:var(--blue-light);color:var(--blue)}
-.b-class{background:#fce4ec;color:#c2185b}
-.b-return{background:var(--bg);color:var(--sub)}
-.tl-desc{font-size:11px;color:var(--sub);line-height:1.5}
-.tl-desc strong{color:var(--text2);font-weight:500}
+/* top row: big departure time + tag */
+.to-top{display:flex;align-items:center;justify-content:space-between;padding:16px 18px 0}
+.to-dep{font-family:'DM Mono',monospace;font-size:34px;font-weight:500;color:var(--gray1);line-height:1}
+.to-tag{font-size:11px;font-weight:700;padding:5px 14px;border-radius:20px;letter-spacing:0.3px;flex-shrink:0}
+.tag-rec{background:var(--gray1);color:#fff}
+.tag-early{background:#e8f1fb;color:#1a4a7a}
+.tag-late{background:var(--rose-bg);color:var(--rose)}
 
-/* ALERT */
-.alert{margin:10px 16px 0;border-radius:12px;padding:11px 14px;font-size:12px;line-height:1.6;display:flex;align-items:flex-start;gap:8px}
-.alert-ok{background:var(--accent-light);border:1px solid #a8d8b9;color:var(--accent)}
-.alert-warn{background:var(--amber-light);border:1px solid #f0c987;color:var(--amber)}
-.alert-err{background:var(--red-light);border:1px solid #e8a19a;color:var(--red)}
-.alert-icon{font-size:14px;flex-shrink:0;margin-top:1px}
+/* bottom: 3 meta columns */
+.to-bottom{display:flex;padding:12px 18px 14px;gap:0}
+.to-col{flex:1;display:flex;flex-direction:column;gap:2px}
+.to-col+.to-col{border-left:1px solid var(--border);padding-left:14px;margin-left:14px}
+.to-col-label{font-size:10px;color:var(--gray4);font-weight:700;letter-spacing:0.5px;text-transform:uppercase}
+.to-col-val{font-family:'DM Mono',monospace;font-size:20px;font-weight:500;color:var(--gray1);line-height:1.1;margin-top:2px}
+.to-col-sub{font-size:11px;color:var(--gray3);margin-top:2px}
 
-/* SECTION LABEL */
-.sec-label{padding:14px 16px 0;display:flex;align-items:center;gap:8px}
-.sec-line{flex:1;height:1px;background:var(--border)}
-.sec-text{font-size:10px;color:var(--muted);letter-spacing:1px;font-weight:700;text-transform:uppercase;white-space:nowrap}
+/* urgent bar */
+.to-urgent{padding:7px 18px;border-top:1px solid}
+.to-urgent.warn{background:var(--amber-bg);border-color:#f5cc80}
+.to-urgent.err{background:var(--rose-bg);border-color:#f4a9a3}
+.to-urgent-txt{font-size:12px;font-weight:700}
+.to-urgent.warn .to-urgent-txt{color:var(--amber)}
+.to-urgent.err .to-urgent-txt{color:var(--rose)}
 
-/* FOOTER */
-.footer{margin-top:20px;text-align:center;font-size:10px;color:var(--muted);line-height:2;padding:0 16px}
+/* check row */
+.to-check-row{display:flex;justify-content:flex-end;padding:0 18px 12px;margin-top:-2px}
+.to-check{width:20px;height:20px;border-radius:50%;border:1.5px solid var(--border2);display:flex;align-items:center;justify-content:center;font-size:10px;color:transparent;transition:all 0.12s}
+.to.sel .to-check{background:var(--gray1);border-color:var(--gray1);color:#fff}
+
+/* ══ TIMELINE ══ */
+.tl{display:flex;flex-direction:column}
+.tl-step{display:flex;gap:12px}
+.tl-spine{display:flex;flex-direction:column;align-items:center;flex-shrink:0;width:36px}
+.tl-icon{width:36px;height:36px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0;border:2px solid}
+.tl-connector{width:2px;flex:1;min-height:10px;margin:3px 0;background:var(--border2);border-radius:1px}
+.tl-step:last-child .tl-connector{display:none}
+.ic-home{background:#e8f1fb;border-color:#a8c4e8}
+.ic-train{background:var(--accent-bg);border-color:#80c8ca}
+.ic-bike{background:#fff8e6;border-color:#f5cc80}
+.ic-yoga{background:#fce4ec;border-color:#f48fb1}
+
+.tl-body{flex:1;padding-bottom:10px}
+.tl-card{background:var(--white);border-radius:16px;border:1px solid var(--border);box-shadow:var(--shadow-sm);overflow:hidden}
+.tl-inner{padding:14px 16px;border-left:3px solid var(--border2)}
+.tl-card.ok .tl-inner{border-left-color:var(--green);background:var(--green-bg)}
+.tl-card.warn .tl-inner{border-left-color:var(--amber);background:var(--amber-bg)}
+.tl-card.err .tl-inner{border-left-color:var(--rose);background:var(--rose-bg)}
+.tl-card.info .tl-inner{border-left-color:var(--accent);background:var(--accent-bg)}
+.tl-row{display:flex;justify-content:space-between;align-items:flex-start;gap:10px}
+.tl-time{font-family:'DM Mono',monospace;font-size:28px;font-weight:500;color:var(--gray1);line-height:1}
+.tl-note{font-size:12px;color:var(--gray3);margin-top:4px}
+.tl-rhs{text-align:right;flex-shrink:0}
+.chip{display:inline-block;font-size:10px;font-weight:700;padding:3px 10px;border-radius:20px;margin-bottom:4px;letter-spacing:0.3px}
+.chip-walk{background:#e8f1fb;color:#1a4a7a}
+.chip-train{background:var(--accent-bg);color:var(--accent-dark)}
+.chip-bike{background:#fff8e6;color:#7a5800}
+.chip-yoga{background:#fce4ec;color:#880e4f}
+.chip-ret{background:var(--bg);color:var(--gray3)}
+.tl-desc{font-size:12px;color:var(--gray3);line-height:1.6;margin-top:2px}
+.tl-desc strong{color:var(--gray2);font-weight:600}
+
+/* ══ FOOTER ══ */
+.footer{padding:24px 0 0;text-align:center;font-size:11px;color:var(--gray4);line-height:2}
 </style>
 </head>
 <body>
 
 <div class="topbar">
-  <div class="topbar-left">
-    <div class="topbar-title">課程出行規劃</div>
-    <div class="topbar-sub">藝術清園 → 台南站 → 善化 → 瑜伽日記</div>
+  <div class="topbar-inner">
+    <div class="tb-left">
+      <div class="tb-eyebrow">Betty 課程出行</div>
+      <div class="tb-title">今日出行規劃</div>
+    </div>
+    <div class="tb-right">
+      <div class="tb-clock" id="clock">--:--</div>
+      <div class="tb-refresh">
+        <span class="tb-rlabel">更新</span>
+        <div class="tb-bar-wrap"><div class="tb-bar" id="refreshBar" style="width:100%"></div></div>
+        <span class="tb-sec" id="refreshSec">30</span>
+      </div>
+    </div>
   </div>
-  <div class="topbar-clock" id="clock">--:--</div>
 </div>
 
-<!-- 本週日期 -->
 <div class="week-strip" id="weekStrip"></div>
 
-<!-- 今日課表 -->
-<div class="class-strip">
-  <div class="strip-label">今日課表</div>
-  <div class="class-cards" id="classCards"></div>
-</div>
+<div class="body">
+  <div class="sec-hd"><div class="sec-step">1</div><div class="sec-title">選擇課程</div><div class="sec-hr"></div></div>
+  <div class="class-list" id="classCards"><div class="no-class">請選擇日期</div></div>
 
-<hr class="divider">
-
-<!-- 時間設定 -->
-<div class="settings-wrap">
-  <div class="setting-card">
-    <div class="setting-label">🏠 家→台南站<br>（騎車分鐘數）</div>
-    <div class="setting-row">
-      <button class="adj-btn" onclick="adj('homeToStation',-1)">−</button>
-      <span class="adj-val" id="homeToStation-val">15</span>
-      <span class="adj-unit">分</span>
-      <button class="adj-btn" onclick="adj('homeToStation',1)">+</button>
+  <div class="sec-hd"><div class="sec-step">2</div><div class="sec-title">時間設定</div><div class="sec-hr"></div></div>
+  <div class="sg-grid">
+    <div class="sg-card" id="cfg-homeToStation">
+      <div class="sg-label">藝術清園 → 台南站（騎車）</div>
+      <div class="sg-row"><button class="sg-btn" onclick="adj('homeToStation',-1)">−</button><span class="sg-val" id="homeToStation-val">15</span><span class="sg-unit">分</span><button class="sg-btn" onclick="adj('homeToStation',1)">+</button></div>
+    </div>
+    <div class="sg-card" id="cfg-boardBuffer">
+      <div class="sg-label">台南站候車緩衝時間</div>
+      <div class="sg-row"><button class="sg-btn" onclick="adj('boardBuffer',-1)">−</button><span class="sg-val" id="boardBuffer-val">5</span><span class="sg-unit">分</span><button class="sg-btn" onclick="adj('boardBuffer',1)">+</button></div>
+    </div>
+    <div class="sg-card" id="cfg-bikeToYoga">
+      <div class="sg-label">善化站 → 瑜伽日記（腳踏車）</div>
+      <div class="sg-row"><button class="sg-btn" onclick="adj('bikeToYoga',-1)">−</button><span class="sg-val" id="bikeToYoga-val">8</span><span class="sg-unit">分</span><button class="sg-btn" onclick="adj('bikeToYoga',1)">+</button></div>
+    </div>
+    <div class="sg-card" id="cfg-stationToHome">
+      <div class="sg-label">藝術清園 → 台南站接 Betty（騎車）</div>
+      <div class="sg-row"><button class="sg-btn" onclick="adj('stationToHome',-1)">−</button><span class="sg-val" id="stationToHome-val">15</span><span class="sg-unit">分</span><button class="sg-btn" onclick="adj('stationToHome',1)">+</button></div>
+    </div>
+    <div class="sg-card" id="cfg-bikeToAG" style="display:none;grid-column:1/-1">
+      <div class="sg-label">藝術清園 → 崇善路 AG 紅光瑜伽（騎車）</div>
+      <div class="sg-row"><button class="sg-btn" onclick="adj('bikeToAG',-1)">−</button><span class="sg-val" id="bikeToAG-val">10</span><span class="sg-unit">分</span><button class="sg-btn" onclick="adj('bikeToAG',1)">+</button></div>
     </div>
   </div>
-  <div class="setting-card">
-    <div class="setting-label">🚲 善化站→<br>瑜伽日記（YouBike）</div>
-    <div class="setting-row">
-      <button class="adj-btn" onclick="adj('bikeToYoga',-1)">−</button>
-      <span class="adj-val" id="bikeToYoga-val">8</span>
-      <span class="adj-unit">分</span>
-      <button class="adj-btn" onclick="adj('bikeToYoga',1)">+</button>
-    </div>
+
+  <div id="alertBox" style="margin-top:12px"></div>
+
+  <div id="trainSelectorSection" style="display:none">
+    <div class="sec-hd"><div class="sec-step">3</div><div class="sec-title">選擇去程班車</div><div class="sec-hr"></div></div>
+    <div class="train-list" id="trainSelector"></div>
   </div>
-  <div class="setting-card">
-    <div class="setting-label">⏱ 台南站候車<br>緩衝時間</div>
-    <div class="setting-row">
-      <button class="adj-btn" onclick="adj('boardBuffer',-1)">−</button>
-      <span class="adj-val" id="boardBuffer-val">5</span>
-      <span class="adj-unit">分</span>
-      <button class="adj-btn" onclick="adj('boardBuffer',1)">+</button>
-    </div>
+
+  <div id="goSection">
+    <div class="sec-hd"><div class="sec-step" id="goSecNum">3</div><div class="sec-title">去程規劃</div><div class="sec-hr"></div></div>
+    <div class="tl" id="goTimeline"><div class="no-class">請選擇課程</div></div>
   </div>
-  <div class="setting-card">
-    <div class="setting-label">🏠 台南站→家<br>（接人後騎車）</div>
-    <div class="setting-row">
-      <button class="adj-btn" onclick="adj('stationToHome',-1)">−</button>
-      <span class="adj-val" id="stationToHome-val">15</span>
-      <span class="adj-unit">分</span>
-      <button class="adj-btn" onclick="adj('stationToHome',1)">+</button>
-    </div>
+
+  <div id="returnSection" style="display:none">
+    <div class="sec-hd"><div class="sec-step">4</div><div class="sec-title">回程 / 接 Betty</div><div class="sec-hr"></div></div>
+    <div class="tl" id="returnTimeline"></div>
   </div>
-</div>
 
-<div id="alertBox"></div>
-
-<!-- 去程 -->
-<div class="sec-label">
-  <div class="sec-line"></div>
-  <div class="sec-text">去程規劃</div>
-  <div class="sec-line"></div>
-</div>
-<div class="timeline" id="goTimeline"><div class="no-class" style="padding:16px 0">請從上方選擇課程</div></div>
-
-<!-- 回程 -->
-<div class="sec-label">
-  <div class="sec-line"></div>
-  <div class="sec-text">回程 / 接人</div>
-  <div class="sec-line"></div>
-</div>
-<div class="timeline" id="returnTimeline"><div class="no-class" style="padding:16px 0">請從上方選擇課程</div></div>
-
-<div class="footer">
-  課表來源：Google Calendar（b.Daily）<br>
-  台鐵時刻表 2026 ・ 每 30 秒自動更新
+  <div class="footer">課表來源：Google Calendar（b.Daily）・ 台鐵時刻表 2026<br>計算每 30 秒自動更新</div>
 </div>
 
 <script>
-// ── 課表資料（從 Google Calendar 讀入）──
-const SCHEDULE = [
-  // 5/2
-  {date:'2026-05-02',name:'AG 紅光瑜伽',start:'12:15',end:'13:15'},
-  {date:'2026-05-02',name:'AD 瑜伽輪流動',start:'16:00',end:'17:00'},
-  // 5/4
-  {date:'2026-05-04',name:'AG 紅光瑜伽',start:'10:45',end:'11:45'},
-  {date:'2026-05-04',name:'AD 陰瑜伽',start:'19:45',end:'20:45'},
-  // 5/5
-  {date:'2026-05-05',name:'AG 紅光瑜伽',start:'12:15',end:'13:15'},
-  // 5/6
-  {date:'2026-05-06',name:'AD 慢流動',start:'11:00',end:'12:00'},
-  // 5/8
-  {date:'2026-05-08',name:'AG 紅光瑜伽',start:'12:15',end:'13:15'},
-  {date:'2026-05-08',name:'AD 和緩流動',start:'18:00',end:'19:00'},
-  {date:'2026-05-08',name:'AD 瑜伽輪伸展',start:'19:15',end:'20:15'},
-  // 5/9
-  {date:'2026-05-09',name:'AG 紅光瑜伽',start:'12:15',end:'13:15'},
-  {date:'2026-05-09',name:'AD 瑜伽輪流動',start:'16:00',end:'17:00'},
+const SCHEDULE=[
+  {date:'2026-05-02',name:'AG 紅光瑜伽',start:'12:15',end:'13:15',type:'local',addr:'東區崇善路 435 號 1F'},
+  {date:'2026-05-02',name:'AD 瑜伽輪流動',start:'16:00',end:'17:00',type:'train',addr:'善化建國路 140 號 2F'},
+  {date:'2026-05-04',name:'AG 紅光瑜伽',start:'10:45',end:'11:45',type:'local',addr:'東區崇善路 435 號 1F'},
+  {date:'2026-05-04',name:'AD 陰瑜伽',start:'19:45',end:'20:45',type:'train',addr:'善化建國路 140 號 2F'},
+  {date:'2026-05-05',name:'AG 紅光瑜伽',start:'12:15',end:'13:15',type:'local',addr:'東區崇善路 435 號 1F'},
+  {date:'2026-05-06',name:'AD 慢流動',start:'11:00',end:'12:00',type:'train',addr:'善化建國路 140 號 2F'},
+  {date:'2026-05-08',name:'AG 紅光瑜伽',start:'12:15',end:'13:15',type:'local',addr:'東區崇善路 435 號 1F'},
+  {date:'2026-05-08',name:'AD 和緩流動',start:'18:00',end:'19:00',type:'train',addr:'善化建國路 140 號 2F'},
+  {date:'2026-05-08',name:'AD 瑜伽輪伸展',start:'19:15',end:'20:15',type:'train',addr:'善化建國路 140 號 2F'},
+  {date:'2026-05-09',name:'AG 紅光瑜伽',start:'12:15',end:'13:15',type:'local',addr:'東區崇善路 435 號 1F'},
+  {date:'2026-05-09',name:'AD 瑜伽輪流動',start:'16:00',end:'17:00',type:'train',addr:'善化建國路 140 號 2F'},
+  {date:'2026-05-11',name:'AG 紅光瑜伽',start:'10:45',end:'11:45',type:'local',addr:'東區崇善路 435 號 1F'},
+  {date:'2026-05-11',name:'AD 陰瑜伽',start:'19:45',end:'20:45',type:'train',addr:'善化建國路 140 號 2F'},
+  {date:'2026-05-12',name:'AG 紅光瑜伽',start:'12:15',end:'13:15',type:'local',addr:'東區崇善路 435 號 1F'},
+  {date:'2026-05-13',name:'AD 慢流動',start:'11:00',end:'12:00',type:'train',addr:'善化建國路 140 號 2F'},
+  {date:'2026-05-15',name:'AG 紅光瑜伽',start:'12:15',end:'13:15',type:'local',addr:'東區崇善路 435 號 1F'},
+  {date:'2026-05-15',name:'AD 和緩流動',start:'18:00',end:'19:00',type:'train',addr:'善化建國路 140 號 2F'},
+  {date:'2026-05-15',name:'AD 瑜伽輪伸展',start:'19:15',end:'20:15',type:'train',addr:'善化建國路 140 號 2F'},
+  {date:'2026-05-16',name:'AG 紅光瑜伽',start:'12:15',end:'13:15',type:'local',addr:'東區崇善路 435 號 1F'},
+  {date:'2026-05-16',name:'AD 瑜伽輪流動',start:'16:00',end:'17:00',type:'train',addr:'善化建國路 140 號 2F'},
 ];
-
-const CFG = {homeToStation:15, bikeToYoga:8, boardBuffer:5, stationToHome:15};
-let selectedDate = todayStr();
-let selectedClass = null;
-
-function todayStr(){
-  const d = new Date();
-  return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
-}
-
-function toMin(t){ const [h,m]=t.split(':').map(Number); return h*60+m; }
-function toHM(m){ return String(Math.floor(m/60)%24).padStart(2,'0')+':'+String(m%60).padStart(2,'0'); }
-function nowMin(){ const n=new Date(); return n.getHours()*60+n.getMinutes(); }
-
-// 台南→善化
 const GO=[
-  {dep:'06:24',arr:'06:47',type:'區間'},{dep:'06:41',arr:'07:10',type:'區間'},
-  {dep:'06:52',arr:'07:04',type:'自強'},{dep:'07:05',arr:'07:28',type:'區間'},
-  {dep:'07:25',arr:'07:53',type:'區間'},{dep:'07:36',arr:'07:58',type:'區間'},
-  {dep:'07:47',arr:'08:03',type:'區間快'},{dep:'08:05',arr:'08:28',type:'區間'},
-  {dep:'08:18',arr:'08:43',type:'區間'},{dep:'08:46',arr:'09:08',type:'區間'},
-  {dep:'09:05',arr:'09:30',type:'區間'},{dep:'09:13',arr:'09:41',type:'區間'},
-  {dep:'09:39',arr:'10:02',type:'區間'},{dep:'09:54',arr:'10:18',type:'區間'},
-  {dep:'10:10',arr:'10:34',type:'區間'},{dep:'10:38',arr:'11:06',type:'區間'},
-  {dep:'10:55',arr:'11:21',type:'區間'},{dep:'11:00',arr:'11:12',type:'自強'},
-  {dep:'11:09',arr:'11:35',type:'區間'},{dep:'11:18',arr:'11:46',type:'區間'},
-  {dep:'11:33',arr:'11:57',type:'區間'},{dep:'11:44',arr:'11:56',type:'自強'},
-  {dep:'11:52',arr:'12:20',type:'區間'},{dep:'12:06',arr:'12:28',type:'區間'},
-  {dep:'12:41',arr:'13:00',type:'區間快'},{dep:'12:50',arr:'13:18',type:'區間'},
-  {dep:'13:11',arr:'13:38',type:'區間'},{dep:'13:36',arr:'13:58',type:'區間'},
-  {dep:'13:49',arr:'14:11',type:'區間'},{dep:'14:22',arr:'14:53',type:'區間'},
-  {dep:'14:29',arr:'14:47',type:'莒光'},{dep:'14:52',arr:'15:15',type:'區間'},
-  {dep:'14:58',arr:'15:25',type:'區間'},{dep:'15:08',arr:'15:20',type:'自強'},
-  {dep:'15:28',arr:'15:43',type:'區間快'},{dep:'15:32',arr:'15:54',type:'區間'},
-  {dep:'15:57',arr:'16:14',type:'區間快'},{dep:'16:03',arr:'16:30',type:'區間'},
-  {dep:'16:18',arr:'16:42',type:'區間'},{dep:'16:25',arr:'16:47',type:'區間'},
-  {dep:'16:55',arr:'17:17',type:'區間'},{dep:'17:02',arr:'17:31',type:'區間'},
-  {dep:'17:19',arr:'17:41',type:'區間'},{dep:'17:35',arr:'17:50',type:'自強'},
-  {dep:'17:41',arr:'18:00',type:'區間快'},{dep:'17:54',arr:'18:21',type:'區間'},
-  {dep:'18:29',arr:'18:51',type:'區間'},{dep:'18:47',arr:'19:13',type:'區間'},
-  {dep:'18:55',arr:'19:07',type:'自強'},{dep:'19:03',arr:'19:33',type:'區間'},
-  {dep:'19:28',arr:'19:49',type:'區間'},{dep:'19:35',arr:'20:02',type:'區間'},
-  {dep:'20:06',arr:'20:33',type:'區間'},{dep:'20:17',arr:'20:40',type:'區間'},
-  {dep:'20:37',arr:'20:59',type:'區間'},{dep:'21:02',arr:'21:26',type:'區間'},
-  {dep:'21:16',arr:'21:38',type:'區間'},{dep:'21:40',arr:'22:08',type:'區間'},
-  {dep:'21:48',arr:'22:03',type:'自強'},{dep:'21:55',arr:'22:18',type:'區間'},
-  {dep:'22:16',arr:'22:38',type:'區間'},{dep:'22:43',arr:'23:05',type:'區間'},
-  {dep:'22:51',arr:'23:13',type:'區間'},{dep:'23:13',arr:'23:36',type:'區間'},
+  {dep:'06:24',arr:'06:47',type:'區間'},{dep:'06:41',arr:'07:10',type:'區間'},{dep:'06:52',arr:'07:04',type:'自強'},{dep:'07:05',arr:'07:28',type:'區間'},{dep:'07:25',arr:'07:53',type:'區間'},{dep:'07:36',arr:'07:58',type:'區間'},{dep:'07:47',arr:'08:03',type:'區間快'},{dep:'08:05',arr:'08:28',type:'區間'},{dep:'08:18',arr:'08:43',type:'區間'},{dep:'08:46',arr:'09:08',type:'區間'},{dep:'09:05',arr:'09:30',type:'區間'},{dep:'09:13',arr:'09:41',type:'區間'},{dep:'09:39',arr:'10:02',type:'區間'},{dep:'09:54',arr:'10:18',type:'區間'},{dep:'10:10',arr:'10:34',type:'區間'},{dep:'10:38',arr:'11:06',type:'區間'},{dep:'10:55',arr:'11:21',type:'區間'},{dep:'11:00',arr:'11:12',type:'自強'},{dep:'11:09',arr:'11:35',type:'區間'},{dep:'11:18',arr:'11:46',type:'區間'},{dep:'11:33',arr:'11:57',type:'區間'},{dep:'11:44',arr:'11:56',type:'自強'},{dep:'11:52',arr:'12:20',type:'區間'},{dep:'12:06',arr:'12:28',type:'區間'},{dep:'12:41',arr:'13:00',type:'區間快'},{dep:'12:50',arr:'13:18',type:'區間'},{dep:'13:11',arr:'13:38',type:'區間'},{dep:'13:36',arr:'13:58',type:'區間'},{dep:'13:49',arr:'14:11',type:'區間'},{dep:'14:22',arr:'14:53',type:'區間'},{dep:'14:29',arr:'14:47',type:'莒光'},{dep:'14:52',arr:'15:15',type:'區間'},{dep:'14:58',arr:'15:25',type:'區間'},{dep:'15:08',arr:'15:20',type:'自強'},{dep:'15:28',arr:'15:43',type:'區間快'},{dep:'15:32',arr:'15:54',type:'區間'},{dep:'15:57',arr:'16:14',type:'區間快'},{dep:'16:03',arr:'16:30',type:'區間'},{dep:'16:18',arr:'16:42',type:'區間'},{dep:'16:25',arr:'16:47',type:'區間'},{dep:'16:55',arr:'17:17',type:'區間'},{dep:'17:02',arr:'17:31',type:'區間'},{dep:'17:19',arr:'17:41',type:'區間'},{dep:'17:35',arr:'17:50',type:'自強'},{dep:'17:41',arr:'18:00',type:'區間快'},{dep:'17:54',arr:'18:21',type:'區間'},{dep:'18:29',arr:'18:51',type:'區間'},{dep:'18:47',arr:'19:13',type:'區間'},{dep:'18:55',arr:'19:07',type:'自強'},{dep:'19:03',arr:'19:33',type:'區間'},{dep:'19:28',arr:'19:49',type:'區間'},{dep:'19:35',arr:'20:02',type:'區間'},{dep:'20:06',arr:'20:33',type:'區間'},{dep:'20:17',arr:'20:40',type:'區間'},{dep:'20:37',arr:'20:59',type:'區間'},{dep:'21:02',arr:'21:26',type:'區間'},{dep:'21:16',arr:'21:38',type:'區間'},{dep:'21:40',arr:'22:08',type:'區間'},{dep:'21:48',arr:'22:03',type:'自強'},{dep:'21:55',arr:'22:18',type:'區間'},{dep:'22:16',arr:'22:38',type:'區間'},{dep:'22:43',arr:'23:05',type:'區間'},{dep:'22:51',arr:'23:13',type:'區間'},{dep:'23:13',arr:'23:36',type:'區間'},
 ];
-// 善化→台南
 const RETURN=[
-  {dep:'05:51',arr:'06:10',type:'區間'},{dep:'06:09',arr:'06:28',type:'區間'},
-  {dep:'06:28',arr:'06:49',type:'區間'},{dep:'06:41',arr:'07:00',type:'區間'},
-  {dep:'07:01',arr:'07:22',type:'區間'},{dep:'07:12',arr:'07:31',type:'區間'},
-  {dep:'07:32',arr:'07:53',type:'區間'},{dep:'07:41',arr:'08:00',type:'區間'},
-  {dep:'08:04',arr:'08:20',type:'區間快'},{dep:'08:16',arr:'08:37',type:'區間'},
-  {dep:'08:47',arr:'09:08',type:'區間'},{dep:'09:01',arr:'09:22',type:'區間'},
-  {dep:'09:22',arr:'09:43',type:'區間'},{dep:'09:33',arr:'09:54',type:'區間'},
-  {dep:'10:01',arr:'10:22',type:'區間'},{dep:'10:10',arr:'10:26',type:'區間快'},
-  {dep:'10:30',arr:'10:51',type:'區間'},{dep:'10:45',arr:'11:01',type:'區間快'},
-  {dep:'11:05',arr:'11:26',type:'區間'},{dep:'11:16',arr:'11:32',type:'區間快'},
-  {dep:'11:30',arr:'11:51',type:'區間'},{dep:'11:56',arr:'12:12',type:'區間快'},
-  {dep:'12:08',arr:'12:29',type:'區間'},{dep:'12:37',arr:'12:59',type:'區間'},
-  {dep:'12:56',arr:'13:18',type:'區間'},{dep:'13:30',arr:'13:52',type:'區間'},
-  {dep:'13:55',arr:'14:23',type:'區間'},{dep:'14:18',arr:'14:40',type:'區間'},
-  {dep:'14:34',arr:'14:55',type:'區間'},{dep:'14:47',arr:'15:02',type:'莒光'},
-  {dep:'14:56',arr:'15:23',type:'區間'},{dep:'15:33',arr:'15:54',type:'區間'},
-  {dep:'15:42',arr:'16:04',type:'區間'},{dep:'16:05',arr:'16:21',type:'自強'},
-  {dep:'16:14',arr:'16:35',type:'區間'},{dep:'16:37',arr:'16:58',type:'區間'},
-  {dep:'16:52',arr:'17:12',type:'區間快'},{dep:'17:06',arr:'17:28',type:'區間'},
-  {dep:'17:14',arr:'17:35',type:'區間'},{dep:'17:28',arr:'17:46',type:'區間快'},
-  {dep:'17:39',arr:'18:00',type:'區間'},{dep:'18:00',arr:'18:18',type:'區間快'},
-  {dep:'18:07',arr:'18:28',type:'區間'},{dep:'18:26',arr:'18:48',type:'區間'},
-  {dep:'18:32',arr:'18:51',type:'區間快'},{dep:'18:50',arr:'19:02',type:'自強3000'},
-  {dep:'19:10',arr:'19:38',type:'區間'},{dep:'19:24',arr:'19:43',type:'區間快'},
-  {dep:'19:41',arr:'20:02',type:'區間'},{dep:'19:48',arr:'20:10',type:'區間'},
-  {dep:'20:06',arr:'20:19',type:'自強'},{dep:'20:09',arr:'20:31',type:'區間'},
-  {dep:'20:32',arr:'20:53',type:'區間'},{dep:'20:50',arr:'21:18',type:'區間'},
-  {dep:'21:07',arr:'21:34',type:'區間'},{dep:'21:47',arr:'22:02',type:'莒光'},
-  {dep:'21:53',arr:'22:15',type:'區間'},{dep:'22:05',arr:'22:33',type:'區間'},
-  {dep:'22:33',arr:'22:53',type:'區間'},{dep:'23:06',arr:'23:19',type:'自強'},
-  {dep:'23:10',arr:'23:32',type:'區間'},{dep:'23:37',arr:'23:59',type:'區間'},
+  {dep:'05:51',arr:'06:10',type:'區間'},{dep:'06:09',arr:'06:28',type:'區間'},{dep:'06:28',arr:'06:49',type:'區間'},{dep:'06:41',arr:'07:00',type:'區間'},{dep:'07:01',arr:'07:22',type:'區間'},{dep:'07:12',arr:'07:31',type:'區間'},{dep:'07:32',arr:'07:53',type:'區間'},{dep:'07:41',arr:'08:00',type:'區間'},{dep:'08:04',arr:'08:20',type:'區間快'},{dep:'08:16',arr:'08:37',type:'區間'},{dep:'08:47',arr:'09:08',type:'區間'},{dep:'09:01',arr:'09:22',type:'區間'},{dep:'09:22',arr:'09:43',type:'區間'},{dep:'09:33',arr:'09:54',type:'區間'},{dep:'10:01',arr:'10:22',type:'區間'},{dep:'10:10',arr:'10:26',type:'區間快'},{dep:'10:30',arr:'10:51',type:'區間'},{dep:'10:45',arr:'11:01',type:'區間快'},{dep:'11:05',arr:'11:26',type:'區間'},{dep:'11:16',arr:'11:32',type:'區間快'},{dep:'11:30',arr:'11:51',type:'區間'},{dep:'11:56',arr:'12:12',type:'區間快'},{dep:'12:08',arr:'12:29',type:'區間'},{dep:'12:37',arr:'12:59',type:'區間'},{dep:'12:56',arr:'13:18',type:'區間'},{dep:'13:30',arr:'13:52',type:'區間'},{dep:'13:55',arr:'14:23',type:'區間'},{dep:'14:18',arr:'14:40',type:'區間'},{dep:'14:34',arr:'14:55',type:'區間'},{dep:'14:47',arr:'15:02',type:'莒光'},{dep:'14:56',arr:'15:23',type:'區間'},{dep:'15:33',arr:'15:54',type:'區間'},{dep:'15:42',arr:'16:04',type:'區間'},{dep:'16:05',arr:'16:21',type:'自強'},{dep:'16:14',arr:'16:35',type:'區間'},{dep:'16:37',arr:'16:58',type:'區間'},{dep:'16:52',arr:'17:12',type:'區間快'},{dep:'17:06',arr:'17:28',type:'區間'},{dep:'17:14',arr:'17:35',type:'區間'},{dep:'17:28',arr:'17:46',type:'區間快'},{dep:'17:39',arr:'18:00',type:'區間'},{dep:'18:00',arr:'18:18',type:'區間快'},{dep:'18:07',arr:'18:28',type:'區間'},{dep:'18:26',arr:'18:48',type:'區間'},{dep:'18:32',arr:'18:51',type:'區間快'},{dep:'18:50',arr:'19:02',type:'自強3000'},{dep:'19:10',arr:'19:38',type:'區間'},{dep:'19:24',arr:'19:43',type:'區間快'},{dep:'19:41',arr:'20:02',type:'區間'},{dep:'19:48',arr:'20:10',type:'區間'},{dep:'20:06',arr:'20:19',type:'自強'},{dep:'20:09',arr:'20:31',type:'區間'},{dep:'20:32',arr:'20:53',type:'區間'},{dep:'20:50',arr:'21:18',type:'區間'},{dep:'21:07',arr:'21:34',type:'區間'},{dep:'21:47',arr:'22:02',type:'莒光'},{dep:'21:53',arr:'22:15',type:'區間'},{dep:'22:05',arr:'22:33',type:'區間'},{dep:'22:33',arr:'22:53',type:'區間'},{dep:'23:06',arr:'23:19',type:'自強'},{dep:'23:10',arr:'23:32',type:'區間'},{dep:'23:37',arr:'23:59',type:'區間'},
 ];
 
-function adj(key,delta){
-  CFG[key]=Math.max(1,Math.min(99,CFG[key]+delta));
-  document.getElementById(key+'-val').textContent=CFG[key];
-  compute();
-}
+const CFG={homeToStation:15,boardBuffer:5,bikeToYoga:8,stationToHome:15,bikeToAG:10};
+let selDate=todayStr(),selClass=null,selTrain=null,cd=30;
 
-// ── Week strip ──
+function todayStr(){const d=new Date();return`${d.getFullYear()}-${p2(d.getMonth()+1)}-${p2(d.getDate())}`}
+function p2(n){return String(n).padStart(2,'0')}
+function toMin(t){const[h,m]=t.split(':').map(Number);return h*60+m}
+function toHM(m){return p2(Math.floor(m/60)%24)+':'+p2(m%60)}
+function nowMin(){const n=new Date();return n.getHours()*60+n.getMinutes()}
+function adj(k,d){CFG[k]=Math.max(1,Math.min(99,CFG[k]+d));document.getElementById(k+'-val').textContent=CFG[k];selTrain=null;compute()}
+
 function buildWeek(){
-  const strip=document.getElementById('weekStrip');
-  strip.innerHTML='';
-  const today=new Date();
-  const wd=['日','一','二','三','四','五','六'];
-  for(let i=0;i<7;i++){
-    const d=new Date(today);
-    d.setDate(today.getDate()+i);
-    const ds=`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
-    const hasClass=SCHEDULE.some(s=>s.date===ds);
-    const isActive=ds===selectedDate;
+  const el=document.getElementById('weekStrip');el.innerHTML='';
+  const today=new Date();const wd=['日','一','二','三','四','五','六'];
+  for(let i=0;i<14;i++){
+    const d=new Date(today);d.setDate(today.getDate()+i);
+    const ds=`${d.getFullYear()}-${p2(d.getMonth()+1)}-${p2(d.getDate())}`;
+    const has=SCHEDULE.some(s=>s.date===ds);
+    if(i>7&&!has)continue;
     const pill=document.createElement('div');
-    pill.className='day-pill'+(isActive?' active':'')+(hasClass?' has-class':'');
-    pill.innerHTML=`<span class="day-wd">${i===0?'今天':wd[d.getDay()]}</span><span class="day-num">${d.getDate()}</span>${hasClass?'<span class="day-dot"></span>':''}`;
-    pill.onclick=()=>{ selectedDate=ds; selectedClass=null; buildWeek(); buildClassCards(); compute(); };
-    strip.appendChild(pill);
+    pill.className='day-pill'+(ds===selDate?' active':'')+(has?' has-class':'');
+    pill.innerHTML=`<span class="day-wd">${i===0?'今':wd[d.getDay()]}</span><span class="day-num">${d.getDate()}</span>${has?'<span class="day-dot"></span>':'<span style="height:4px"></span>'}`;
+    pill.onclick=()=>{selDate=ds;selClass=null;selTrain=null;buildWeek();buildCards();compute()};
+    el.appendChild(pill);
   }
 }
 
-// ── Class cards ──
-function buildClassCards(){
+function buildCards(){
   const wrap=document.getElementById('classCards');
-  const classes=SCHEDULE.filter(s=>s.date===selectedDate);
-  if(!classes.length){
-    wrap.innerHTML='<div class="no-class">今日無課程</div>';
-    document.getElementById('goTimeline').innerHTML='<div class="no-class" style="padding:16px 0">今日無課程</div>';
-    document.getElementById('returnTimeline').innerHTML='';
-    document.getElementById('alertBox').innerHTML='';
-    return;
-  }
+  const list=SCHEDULE.filter(s=>s.date===selDate);
+  if(!list.length){wrap.innerHTML='<div class="no-class">今日無課程</div>';return}
+  if(!selClass||!list.find(c=>c.name===selClass.name&&c.start===selClass.start)){selClass=list[0];selTrain=null}
   wrap.innerHTML='';
-  classes.forEach((c,i)=>{
-    const isSelected=selectedClass&&selectedClass.name===c.name&&selectedClass.start===c.start;
-    const card=document.createElement('div');
-    card.className='class-card'+(isSelected?' selected':'');
-    card.innerHTML=`
-      <div class="class-time-badge">${c.start}</div>
-      <div class="class-info">
-        <div class="class-name">${c.name}</div>
-        <div class="class-dur">${c.start} – ${c.end}，60 分鐘</div>
+  list.forEach(c=>{
+    const isSel=selClass&&selClass.name===c.name&&selClass.start===c.start;
+    const isLocal=c.type==='local';
+    const d=document.createElement('div');
+    d.className='cc'+(isSel?' sel':'');
+    d.innerHTML=`
+      <div class="cc-time-col">
+        <div class="cc-time">${c.start}</div>
+        <div class="cc-pill ${isLocal?'pill-local':'pill-train'}">${isLocal?'🏍 台南市區':'🚆 善化搭車'}</div>
       </div>
-      <div class="class-select-indicator"><span class="check-mark">✓</span></div>
-    `;
-    card.onclick=()=>{ selectedClass=c; buildClassCards(); compute(); };
-    wrap.appendChild(card);
+      <div class="cc-sep"></div>
+      <div class="cc-info">
+        <div class="cc-end">結束 ${c.end}</div>
+        <div class="cc-name">${c.name}</div>
+        <div class="cc-addr">📍 ${c.addr}</div>
+      </div>
+      <div class="cc-check">✓</div>`;
+    d.onclick=()=>{selClass=c;selTrain=null;buildCards();compute()};
+    wrap.appendChild(d);
   });
-  // auto-select first if none
-  if(!selectedClass||!classes.find(c=>c.name===selectedClass.name&&c.start===selectedClass.start)){
-    selectedClass=classes[0];
-    buildClassCards();
-  }
 }
 
-// ── Compute ──
-function step(dotClass,dotLabel,cardClass,timeStr,noteStr,badgeHTML,descHTML,isLast){
-  return `<div class="tl-step">
-    <div class="tl-dot ${dotClass}">${dotLabel}</div>
-    ${isLast?'':'<div class="tl-line"></div>'}
-    <div class="tl-card ${cardClass}">
+function tlS(ic,emoji,state,time,note,chip,desc,last){
+  return`<div class="tl-step">
+    <div class="tl-spine"><div class="tl-icon ${ic}">${emoji}</div>${last?'':'<div class="tl-connector"></div>'}</div>
+    <div class="tl-body"><div class="tl-card ${state}"><div class="tl-inner">
       <div class="tl-row">
-        <div><div class="tl-time">${timeStr}</div><div class="tl-time-note">${noteStr}</div></div>
-        <div class="tl-right">${badgeHTML}<div class="tl-desc">${descHTML}</div></div>
+        <div><div class="tl-time">${time}</div><div class="tl-note">${note}</div></div>
+        <div class="tl-rhs">${chip}<div class="tl-desc">${desc}</div></div>
       </div>
-    </div>
-  </div>`;
+    </div></div></div>
+  </div>`
+}
+
+function buildTrainOpts(classMin,now,isToday){
+  const latestArr=classMin-CFG.bikeToYoga;
+  let recIdx=-1;
+  for(let i=0;i<GO.length;i++){if(toMin(GO[i].arr)<=latestArr)recIdx=i}
+  const wrap=document.getElementById('trainSelector');
+  if(recIdx===-1){wrap.innerHTML='<div class="no-class" style="color:var(--rose)">找不到能準時到達的班車</div>';return null}
+  const idxs=[];
+  if(recIdx-1>=0)idxs.push(recIdx-1);
+  idxs.push(recIdx);
+  if(recIdx+1<GO.length)idxs.push(recIdx+1);
+  if(!selTrain)selTrain=GO[recIdx];
+  wrap.innerHTML='';
+  idxs.forEach(i=>{
+    const t=GO[i];
+    const isRec=i===recIdx,isLater=i>recIdx;
+    const depMin=toMin(t.dep),arrMin=toMin(t.arr);
+    const leave=depMin-CFG.boardBuffer-CFG.homeToStation;
+    const ml=leave-now;
+    const arrYoga=arrMin+CFG.bikeToYoga;
+    const buf=classMin-arrYoga;
+    const tooLate=arrMin>latestArr;
+    const isSel=selTrain&&selTrain.dep===t.dep;
+    let tagTxt='',tagCls='';
+    if(tooLate){tagTxt=`晚到 ${arrYoga-classMin} 分`;tagCls='tag-late'}
+    else if(isRec){tagTxt='建議搭乘';tagCls='tag-rec'}
+    else if(!isLater){tagTxt=`提早 ${buf} 分到達`;tagCls='tag-early'}
+    else{tagTxt='會遲到';tagCls='tag-late'}
+    let urgHTML='';
+    if(isToday&&!tooLate){
+      if(ml<0)urgHTML=`<div class="to-urgent err"><span class="to-urgent-txt">⚠ 已超過出發時間</span></div>`;
+      else if(ml<=10)urgHTML=`<div class="to-urgent warn"><span class="to-urgent-txt">⚡ 還有 ${ml} 分鐘需出發</span></div>`;
+    }
+    const div=document.createElement('div');
+    div.className='to'+(isSel?' sel':'')+(tooLate?' too-late':'');
+    div.innerHTML=`
+      <div class="to-top">
+        <div class="to-dep">${t.dep}</div>
+        <span class="to-tag ${tagCls}">${tagTxt}</span>
+      </div>
+      <div class="to-bottom">
+        <div class="to-col">
+          <div class="to-col-label">車種</div>
+          <div class="to-col-val">${t.type}</div>
+          <div class="to-col-sub">抵善化 ${t.arr}</div>
+        </div>
+        <div class="to-col">
+          <div class="to-col-label">從家出發</div>
+          <div class="to-col-val">${toHM(leave)}</div>
+          <div class="to-col-sub">${isToday?(ml>=0?`還有 ${ml} 分鐘`:'已超時'):''}</div>
+        </div>
+        <div class="to-col">
+          <div class="to-col-label">抵達教室</div>
+          <div class="to-col-val">${toHM(arrYoga)}</div>
+          <div class="to-col-sub">${tooLate?`晚 ${arrYoga-classMin} 分`:buf>0?`提早 ${buf} 分`:''}</div>
+        </div>
+      </div>
+      ${urgHTML}
+      <div class="to-check-row"><div class="to-check">✓</div></div>`;
+    if(!tooLate)div.onclick=()=>{selTrain=t;buildTrainOpts(classMin,now,isToday);renderGo(classMin,now,isToday)};
+    wrap.appendChild(div);
+  });
+  return selTrain;
+}
+
+function renderGo(classMin,now,isToday){
+  const t=selTrain;if(!t)return;
+  const depMin=toMin(t.dep),arrMin=toMin(t.arr);
+  const mustAt=depMin-CFG.boardBuffer,leave=mustAt-CFG.homeToStation;
+  const arrYoga=arrMin+CFG.bikeToYoga,ml=leave-now,buf=classMin-arrYoga;
+  const hc=!isToday?'':(ml<0?'err':ml<=8?'warn':'ok');
+  const mn=!isToday?'出發時間':ml>=0?`距現在還有 ${ml} 分鐘`:`⚠ 已超過 ${Math.abs(ml)} 分`;
+  let html='';
+  html+=tlS('ic-home','🏠',hc,toHM(leave),mn,`<span class="chip chip-walk">騎機車</span>`,`從<strong>藝術清園</strong>出發<br>→ 台南火車站後站`,false);
+  html+=tlS('ic-train','🚉','info',toHM(mustAt),`候車 · ${t.dep} ${t.type}`,`<span class="chip chip-train">${t.type}</span>`,`台南站上車`,false);
+  html+=tlS('ic-train','📍','',t.arr,'抵達善化火車站',`<span class="chip chip-bike">腳踏車</span>`,`YouBike 騎 ${CFG.bikeToYoga} 分鐘<br>→ <strong>瑜伽日記</strong> 建國路 140 號`,false);
+  html+=tlS('ic-yoga','🧘',arrYoga<=classMin?'ok':'err',toHM(arrYoga),arrYoga<=classMin?`提前 ${buf} 分鐘抵達 ✓`:`晚 ${arrYoga-classMin} 分鐘 ✗`,`<span class="chip chip-yoga">上課</span>`,`<strong>${selClass.name}</strong>`,true);
+  document.getElementById('goTimeline').innerHTML=html;
+  let a='';
+  if(isToday){
+    if(ml<0)a=`<div class="alert alert-err"><span class="alert-icon">⚠</span>已超過最晚出發時間，建議改搭下一班。</div>`;
+    else if(ml<=10)a=`<div class="alert alert-warn"><span class="alert-icon">⚡</span>距離出發只剩 <strong>${ml} 分鐘</strong>，請準備出門！</div>`;
+    else a=`<div class="alert alert-ok"><span class="alert-icon">✓</span>計畫正常，距出發還有 <strong>${ml} 分鐘</strong>。</div>`;
+  }
+  document.getElementById('alertBox').innerHTML=a;
 }
 
 function compute(){
-  if(!selectedClass){
-    document.getElementById('goTimeline').innerHTML='<div class="no-class" style="padding:16px 0">請選擇課程</div>';
-    document.getElementById('returnTimeline').innerHTML='';
+  const tcfgs=['cfg-homeToStation','cfg-boardBuffer','cfg-bikeToYoga','cfg-stationToHome'];
+  if(!selClass){
+    document.getElementById('goTimeline').innerHTML='<div class="no-class">請選擇課程</div>';
+    ['trainSelectorSection','returnSection'].forEach(id=>document.getElementById(id).style.display='none');
     document.getElementById('alertBox').innerHTML='';
+    document.getElementById('goSecNum').textContent='3';
+    tcfgs.forEach(id=>document.getElementById(id).style.display='');
+    document.getElementById('cfg-bikeToAG').style.display='none';
     return;
   }
-  const classMin=toMin(selectedClass.start);
-  const now=nowMin();
-  const isToday=selectedDate===todayStr();
-
-  // ── 去程 ──
-  const latestArrShanhua=classMin-CFG.bikeToYoga;
-  let goTrain=null;
-  for(const t of GO){ if(toMin(t.arr)<=latestArrShanhua) goTrain=t; }
-
-  let goHTML='';
-  if(!goTrain){
-    goHTML='<div class="no-class" style="padding:16px 0;color:#c0392b">找不到能準時到達的班車，請調整設定</div>';
-  } else {
-    const trainDepMin=toMin(goTrain.dep);
-    const mustAtStation=trainDepMin-CFG.boardBuffer;
-    const leaveHome=mustAtStation-CFG.homeToStation;
-    const bikeArrYoga=toMin(goTrain.arr)+CFG.bikeToYoga;
-    const minsLeft=leaveHome-now;
-    const bufferMin=classMin-bikeArrYoga;
-
-    let homeCard='';
-    if(!isToday) homeCard='';
-    else if(minsLeft<0) homeCard='c-red';
-    else if(minsLeft<=8) homeCard='c-amber';
-    else homeCard='c-green';
-
-    const minsNote=!isToday?`出門時間`
-      :minsLeft>=0?`距現在還有 ${minsLeft} 分鐘`:`⚠ 已超過 ${Math.abs(minsLeft)} 分`;
-
-    goHTML+=step('dot-home','🏠',homeCard,toHM(leaveHome),minsNote,
-      `<span class="tl-badge b-walk">騎機車</span>`,
-      `從<strong>藝術清園</strong>出發<br>→ 台南火車站後站`,false);
-    goHTML+=step('dot-train','🚉','c-blue',toHM(mustAtStation),`搭 ${goTrain.dep} ${goTrain.type}`,
-      `<span class="tl-badge b-train">${goTrain.type}</span>`,
-      `台南站候車<br>約 12–28 分鐘抵善化`,false);
-    goHTML+=step('dot-train','📍','',goTrain.arr,`抵達善化火車站`,
-      `<span class="tl-badge b-bike">YouBike</span>`,
-      `騎腳踏車 <strong>${CFG.bikeToYoga} 分鐘</strong><br>→ 瑜伽日記 建國路 140 號`,false);
-    const yogaCard=bikeArrYoga<=classMin?'c-green':'c-red';
-    const yogaNote=bikeArrYoga<=classMin?`提前 ${bufferMin} 分鐘抵達 ✓`:`晚 ${bikeArrYoga-classMin} 分鐘 ✗`;
-    goHTML+=step('dot-class','🧘',yogaCard,toHM(bikeArrYoga),yogaNote,
-      `<span class="tl-badge b-class">上課</span>`,
-      `<strong>瑜伽日記</strong> 2F<br>${selectedClass.name}`,true);
-  }
-  document.getElementById('goTimeline').innerHTML=goHTML;
-
-  // ── 回程 ──
-  const classEndMin=classMin+60;
-  const earliestDep=classEndMin+CFG.boardBuffer;
-  let retTrain=null;
-  for(const t of RETURN){ if(toMin(t.dep)>=earliestDep){ retTrain=t; break; } }
-
-  let retHTML='';
-  if(!retTrain){
-    retHTML='<div class="no-class" style="padding:16px 0;color:#c0392b">今日已無回程班次</div>';
-  } else {
-    const retDepMin=toMin(retTrain.dep);
-    const retArrMin=toMin(retTrain.arr);
-    const youLeaveMin=retArrMin-CFG.stationToHome;
-    const youLeaveLeft=youLeaveMin-now;
-
-    retHTML+=step('dot-class','🧘','',toHM(classEndMin),'下課，前往善化車站',
-      `<span class="tl-badge b-bike">YouBike</span>`,
-      `騎腳踏車返回善化站<br>約 ${CFG.bikeToYoga} 分鐘`,false);
-    retHTML+=step('dot-train','🚉','c-blue',retTrain.dep,`善化搭車`,
-      `<span class="tl-badge b-train">${retTrain.type}</span>`,
-      `約 16–21 分鐘抵台南`,false);
-    retHTML+=step('dot-train','🚉','c-green',retTrain.arr,`抵達台南火車站後站`,
-      `<span class="tl-badge b-return">後站出站</span>`,
-      `家人到達台南`,false);
-
-    const youCard=!isToday?'':(youLeaveLeft<0?'c-red':youLeaveLeft<=10?'c-amber':'c-green');
-    const youNote=!isToday?`出門接人時間`
-      :youLeaveLeft>=0?`距現在 ${youLeaveLeft} 分鐘後出發`:`⚠ 請立刻出發接人`;
-    retHTML+=step('dot-home','🏠',youCard,toHM(youLeaveMin),youNote,
-      `<span class="tl-badge b-walk">騎機車</span>`,
-      `從<strong>藝術清園</strong>出發<br>→ 台南火車站後站接人`,true);
-  }
-  document.getElementById('returnTimeline').innerHTML=retHTML;
-
-  // ── Alert ──
-  let alertHTML='';
-  if(goTrain&&isToday){
-    const trainDepMin=toMin(goTrain.dep);
-    const leaveHome=trainDepMin-CFG.boardBuffer-CFG.homeToStation;
-    const minsLeft=leaveHome-now;
-    if(minsLeft<0){
-      alertHTML=`<div class="alert alert-err"><span class="alert-icon">⚠</span>已超過最晚出發時間，建議改搭下一班或調整課程。</div>`;
-    } else if(minsLeft<=10){
-      alertHTML=`<div class="alert alert-warn"><span class="alert-icon">⚡</span>距離出發只剩 <strong>${minsLeft} 分鐘</strong>，請準備出門！</div>`;
-    } else {
-      alertHTML=`<div class="alert alert-ok"><span class="alert-icon">✓</span>計畫正常，距出發還有 <strong>${minsLeft} 分鐘</strong>。</div>`;
+  const classMin=toMin(selClass.start),now=nowMin(),isToday=selDate===todayStr();
+  if(selClass.type==='local'){
+    tcfgs.forEach(id=>document.getElementById(id).style.display='none');
+    document.getElementById('cfg-bikeToAG').style.display='';
+    ['trainSelectorSection','returnSection'].forEach(id=>document.getElementById(id).style.display='none');
+    document.getElementById('goSecNum').textContent='3';
+    const buf=8,ride=CFG.bikeToAG,leave=classMin-buf-ride,arrive=leave+ride,ml=leave-now;
+    const hc=!isToday?'':(ml<0?'err':ml<=8?'warn':'ok');
+    const mn=!isToday?'出發時間':ml>=0?`距現在還有 ${ml} 分鐘`:`⚠ 已超過 ${Math.abs(ml)} 分`;
+    let html='';
+    html+=tlS('ic-home','🏠',hc,toHM(leave),mn,`<span class="chip chip-walk">騎機車</span>`,`從<strong>藝術清園</strong>出發<br>→ 崇善路 435 號 AG 紅光瑜伽`,false);
+    html+=tlS('ic-yoga','🧘','ok',toHM(arrive),`提前 ${buf} 分鐘抵達 ✓`,`<span class="chip chip-yoga">上課</span>`,`<strong>AG 紅光瑜伽</strong>`,true);
+    document.getElementById('goTimeline').innerHTML=html;
+    let a='';
+    if(isToday){
+      if(ml<0)a=`<div class="alert alert-err"><span class="alert-icon">⚠</span>已超過最晚出發時間。</div>`;
+      else if(ml<=10)a=`<div class="alert alert-warn"><span class="alert-icon">⚡</span>距離出發只剩 <strong>${ml} 分鐘</strong>！</div>`;
+      else a=`<div class="alert alert-ok"><span class="alert-icon">✓</span>計畫正常，距出發還有 <strong>${ml} 分鐘</strong>。</div>`;
     }
+    document.getElementById('alertBox').innerHTML=a;
+  } else {
+    tcfgs.forEach(id=>document.getElementById(id).style.display='');
+    document.getElementById('cfg-bikeToAG').style.display='none';
+    ['trainSelectorSection','returnSection'].forEach(id=>document.getElementById(id).style.display='');
+    document.getElementById('goSecNum').textContent='4';
+    buildTrainOpts(classMin,now,isToday);
+    renderGo(classMin,now,isToday);
+    const endMin=classMin+60;
+    let ret=null;
+    for(const t of RETURN){if(toMin(t.dep)>=endMin+CFG.boardBuffer){ret=t;break}}
+    if(!ret){document.getElementById('returnTimeline').innerHTML='<div class="no-class" style="color:var(--rose)">今日已無回程班次</div>';return}
+    const retArr=toMin(ret.arr),youLeave=retArr-CFG.stationToHome,yl=youLeave-now;
+    const yc=!isToday?'':(yl<0?'err':yl<=10?'warn':'ok');
+    const yn=!isToday?'出門接人時間':yl>=0?`距現在 ${yl} 分鐘後出發`:'⚠ 請立刻出發接人';
+    let html='';
+    html+=tlS('ic-yoga','🧘','',toHM(endMin),'下課，前往善化車站',`<span class="chip chip-bike">腳踏車</span>`,`YouBike 騎回善化站`,false);
+    html+=tlS('ic-train','🚉','info',ret.dep,'善化上車',`<span class="chip chip-train">${ret.type}</span>`,`約 16–21 分鐘抵台南`,false);
+    html+=tlS('ic-train','🚉','ok',ret.arr,'抵達台南火車站後站',`<span class="chip chip-ret">後站出站</span>`,`Betty 抵達台南`,false);
+    html+=tlS('ic-home','🏠',yc,toHM(youLeave),yn,`<span class="chip chip-walk">騎機車</span>`,`從<strong>藝術清園</strong>出發<br>→ 台南後站接 Betty`,true);
+    document.getElementById('returnTimeline').innerHTML=html;
   }
-  document.getElementById('alertBox').innerHTML=alertHTML;
 }
 
-function updateClock(){
+function tick(){
   const n=new Date();
-  document.getElementById('clock').textContent=
-    String(n.getHours()).padStart(2,'0')+':'+String(n.getMinutes()).padStart(2,'0');
+  document.getElementById('clock').textContent=p2(n.getHours())+':'+p2(n.getMinutes());
+  cd--;if(cd<=0){cd=30;compute()}
+  document.getElementById('refreshBar').style.width=(cd/30*100)+'%';
+  document.getElementById('refreshSec').textContent=cd;
 }
-
-buildWeek();
-buildClassCards();
-compute();
-updateClock();
-setInterval(()=>{ updateClock(); compute(); },30000);
+buildWeek();buildCards();compute();tick();setInterval(tick,1000);
 </script>
 </body>
 </html>

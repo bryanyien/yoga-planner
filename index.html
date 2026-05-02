@@ -172,6 +172,32 @@ body{background:var(--bg);color:var(--gray1);font-family:'Noto Sans TC',sans-ser
 .tl-desc{font-size:12px;color:var(--gray3);line-height:1.6;margin-top:2px}
 .tl-desc strong{color:var(--gray2);font-weight:600}
 
+/* ══ DROPDOWN CARD ══ */
+.sg-card-full{grid-column:1/-1}
+.sg-dropdown-wrap{position:relative;margin-top:10px}
+.sg-dropdown{
+  width:100%;appearance:none;-webkit-appearance:none;
+  background:var(--bg);border:1.5px solid var(--border2);
+  border-radius:12px;padding:12px 40px 12px 16px;
+  font-size:20px;font-family:'DM Mono',monospace;font-weight:500;
+  color:var(--gray1);cursor:pointer;outline:none;
+  transition:border-color 0.12s;
+}
+.sg-dropdown:focus{border-color:var(--gray1)}
+.sg-dropdown-arrow{
+  position:absolute;right:14px;top:50%;transform:translateY(-50%);
+  pointer-events:none;font-size:14px;color:var(--gray3);
+}
+.sg-dropdown-opts{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
+.sg-opt{
+  flex:1;min-width:52px;padding:8px 4px;border-radius:10px;
+  border:1.5px solid var(--border2);background:var(--bg);
+  font-size:14px;font-weight:700;color:var(--gray2);
+  text-align:center;cursor:pointer;transition:all 0.12s;
+  -webkit-tap-highlight-color:transparent;font-family:'DM Mono',monospace;
+}
+.sg-opt.active{background:var(--gray1);color:#fff;border-color:var(--gray1)}
+
 /* ══ FOOTER ══ */
 .footer{padding:24px 0 0;text-align:center;font-size:11px;color:var(--gray4);line-height:2}
 </style>
@@ -223,6 +249,18 @@ body{background:var(--bg);color:var(--gray1);font-family:'Noto Sans TC',sans-ser
       <div class="sg-label">藝術清園 → 崇善路 AG 紅光瑜伽（騎車）</div>
       <div class="sg-row"><button class="sg-btn" onclick="adj('bikeToAG',-1)">−</button><span class="sg-val" id="bikeToAG-val">10</span><span class="sg-unit">分</span><button class="sg-btn" onclick="adj('bikeToAG',1)">+</button></div>
     </div>
+    <div class="sg-card sg-card-full" id="cfg-earlyArrival">
+      <div class="sg-label">⏰ Betty 需提前抵達教室（預習時間）</div>
+      <div class="sg-dropdown-opts" id="earlyOpts">
+        <div class="sg-opt sg-early active" onclick="setEarly(0)">不需要</div>
+        <div class="sg-opt sg-early" onclick="setEarly(15)">15 分</div>
+        <div class="sg-opt sg-early" onclick="setEarly(30)">30 分</div>
+        <div class="sg-opt sg-early" onclick="setEarly(45)">45 分</div>
+        <div class="sg-opt sg-early" onclick="setEarly(60)">60 分</div>
+        <div class="sg-opt sg-early" onclick="setEarly(90)">1.5 小時</div>
+      </div>
+      <div id="earlyDisplay" style="margin-top:8px;font-size:13px;color:var(--gray3)">不需要提前抵達</div>
+    </div>
   </div>
 
   <div id="alertBox" style="margin-top:12px"></div>
@@ -242,31 +280,70 @@ body{background:var(--bg);color:var(--gray1);font-family:'Noto Sans TC',sans-ser
     <div class="tl" id="returnTimeline"></div>
   </div>
 
-  <div class="footer">課表來源：Google Calendar（b.Daily）・ 台鐵時刻表 2026<br>計算每 30 秒自動更新</div>
+  <div class="footer">課表來源：Google Calendar（b.Daily）・ 台鐵時刻表 2026<br>課表涵蓋至 2026/5/30 ・ 計算每 30 秒自動更新</div>
 </div>
 
 <script>
 const SCHEDULE=[
+  // 5/2
   {date:'2026-05-02',name:'AG 紅光瑜伽',start:'12:15',end:'13:15',type:'local',addr:'東區崇善路 435 號 1F'},
   {date:'2026-05-02',name:'AD 瑜伽輪流動',start:'16:00',end:'17:00',type:'train',addr:'善化建國路 140 號 2F'},
+  // 5/4
   {date:'2026-05-04',name:'AG 紅光瑜伽',start:'10:45',end:'11:45',type:'local',addr:'東區崇善路 435 號 1F'},
   {date:'2026-05-04',name:'AD 陰瑜伽',start:'19:45',end:'20:45',type:'train',addr:'善化建國路 140 號 2F'},
+  // 5/5
   {date:'2026-05-05',name:'AG 紅光瑜伽',start:'12:15',end:'13:15',type:'local',addr:'東區崇善路 435 號 1F'},
+  // 5/6
   {date:'2026-05-06',name:'AD 慢流動',start:'11:00',end:'12:00',type:'train',addr:'善化建國路 140 號 2F'},
+  // 5/8
   {date:'2026-05-08',name:'AG 紅光瑜伽',start:'12:15',end:'13:15',type:'local',addr:'東區崇善路 435 號 1F'},
   {date:'2026-05-08',name:'AD 和緩流動',start:'18:00',end:'19:00',type:'train',addr:'善化建國路 140 號 2F'},
   {date:'2026-05-08',name:'AD 瑜伽輪伸展',start:'19:15',end:'20:15',type:'train',addr:'善化建國路 140 號 2F'},
+  // 5/9
   {date:'2026-05-09',name:'AG 紅光瑜伽',start:'12:15',end:'13:15',type:'local',addr:'東區崇善路 435 號 1F'},
   {date:'2026-05-09',name:'AD 瑜伽輪流動',start:'16:00',end:'17:00',type:'train',addr:'善化建國路 140 號 2F'},
+  // 5/11
   {date:'2026-05-11',name:'AG 紅光瑜伽',start:'10:45',end:'11:45',type:'local',addr:'東區崇善路 435 號 1F'},
   {date:'2026-05-11',name:'AD 陰瑜伽',start:'19:45',end:'20:45',type:'train',addr:'善化建國路 140 號 2F'},
+  // 5/12
   {date:'2026-05-12',name:'AG 紅光瑜伽',start:'12:15',end:'13:15',type:'local',addr:'東區崇善路 435 號 1F'},
+  // 5/13
   {date:'2026-05-13',name:'AD 慢流動',start:'11:00',end:'12:00',type:'train',addr:'善化建國路 140 號 2F'},
+  // 5/15
   {date:'2026-05-15',name:'AG 紅光瑜伽',start:'12:15',end:'13:15',type:'local',addr:'東區崇善路 435 號 1F'},
   {date:'2026-05-15',name:'AD 和緩流動',start:'18:00',end:'19:00',type:'train',addr:'善化建國路 140 號 2F'},
   {date:'2026-05-15',name:'AD 瑜伽輪伸展',start:'19:15',end:'20:15',type:'train',addr:'善化建國路 140 號 2F'},
+  // 5/16
   {date:'2026-05-16',name:'AG 紅光瑜伽',start:'12:15',end:'13:15',type:'local',addr:'東區崇善路 435 號 1F'},
   {date:'2026-05-16',name:'AD 瑜伽輪流動',start:'16:00',end:'17:00',type:'train',addr:'善化建國路 140 號 2F'},
+  // 5/18
+  {date:'2026-05-18',name:'AG 紅光瑜伽',start:'10:45',end:'11:45',type:'local',addr:'東區崇善路 435 號 1F'},
+  {date:'2026-05-18',name:'AD 陰瑜伽',start:'19:45',end:'20:45',type:'train',addr:'善化建國路 140 號 2F'},
+  // 5/19
+  {date:'2026-05-19',name:'AG 紅光瑜伽',start:'12:15',end:'13:15',type:'local',addr:'東區崇善路 435 號 1F'},
+  // 5/20
+  {date:'2026-05-20',name:'AD 慢流動',start:'11:00',end:'12:00',type:'train',addr:'善化建國路 140 號 2F'},
+  // 5/22
+  {date:'2026-05-22',name:'AG 紅光瑜伽',start:'12:15',end:'13:15',type:'local',addr:'東區崇善路 435 號 1F'},
+  {date:'2026-05-22',name:'AD 和緩流動',start:'18:00',end:'19:00',type:'train',addr:'善化建國路 140 號 2F'},
+  {date:'2026-05-22',name:'AD 瑜伽輪伸展',start:'19:15',end:'20:15',type:'train',addr:'善化建國路 140 號 2F'},
+  // 5/23
+  {date:'2026-05-23',name:'AG 紅光瑜伽',start:'12:15',end:'13:15',type:'local',addr:'東區崇善路 435 號 1F'},
+  {date:'2026-05-23',name:'AD 瑜伽輪流動',start:'16:00',end:'17:00',type:'train',addr:'善化建國路 140 號 2F'},
+  // 5/25
+  {date:'2026-05-25',name:'AG 紅光瑜伽',start:'10:45',end:'11:45',type:'local',addr:'東區崇善路 435 號 1F'},
+  {date:'2026-05-25',name:'AD 陰瑜伽',start:'19:45',end:'20:45',type:'train',addr:'善化建國路 140 號 2F'},
+  // 5/26
+  {date:'2026-05-26',name:'AG 紅光瑜伽',start:'12:15',end:'13:15',type:'local',addr:'東區崇善路 435 號 1F'},
+  // 5/27
+  {date:'2026-05-27',name:'AD 慢流動',start:'11:00',end:'12:00',type:'train',addr:'善化建國路 140 號 2F'},
+  // 5/29
+  {date:'2026-05-29',name:'AG 紅光瑜伽',start:'12:15',end:'13:15',type:'local',addr:'東區崇善路 435 號 1F'},
+  {date:'2026-05-29',name:'AD 和緩流動',start:'18:00',end:'19:00',type:'train',addr:'善化建國路 140 號 2F'},
+  {date:'2026-05-29',name:'AD 瑜伽輪伸展',start:'19:15',end:'20:15',type:'train',addr:'善化建國路 140 號 2F'},
+  // 5/30
+  {date:'2026-05-30',name:'AG 紅光瑜伽',start:'12:15',end:'13:15',type:'local',addr:'東區崇善路 435 號 1F'},
+  {date:'2026-05-30',name:'AD 瑜伽輪流動',start:'16:00',end:'17:00',type:'train',addr:'善化建國路 140 號 2F'},
 ];
 const GO=[
   {dep:'06:24',arr:'06:47',type:'區間'},{dep:'06:41',arr:'07:10',type:'區間'},{dep:'06:52',arr:'07:04',type:'自強'},{dep:'07:05',arr:'07:28',type:'區間'},{dep:'07:25',arr:'07:53',type:'區間'},{dep:'07:36',arr:'07:58',type:'區間'},{dep:'07:47',arr:'08:03',type:'區間快'},{dep:'08:05',arr:'08:28',type:'區間'},{dep:'08:18',arr:'08:43',type:'區間'},{dep:'08:46',arr:'09:08',type:'區間'},{dep:'09:05',arr:'09:30',type:'區間'},{dep:'09:13',arr:'09:41',type:'區間'},{dep:'09:39',arr:'10:02',type:'區間'},{dep:'09:54',arr:'10:18',type:'區間'},{dep:'10:10',arr:'10:34',type:'區間'},{dep:'10:38',arr:'11:06',type:'區間'},{dep:'10:55',arr:'11:21',type:'區間'},{dep:'11:00',arr:'11:12',type:'自強'},{dep:'11:09',arr:'11:35',type:'區間'},{dep:'11:18',arr:'11:46',type:'區間'},{dep:'11:33',arr:'11:57',type:'區間'},{dep:'11:44',arr:'11:56',type:'自強'},{dep:'11:52',arr:'12:20',type:'區間'},{dep:'12:06',arr:'12:28',type:'區間'},{dep:'12:41',arr:'13:00',type:'區間快'},{dep:'12:50',arr:'13:18',type:'區間'},{dep:'13:11',arr:'13:38',type:'區間'},{dep:'13:36',arr:'13:58',type:'區間'},{dep:'13:49',arr:'14:11',type:'區間'},{dep:'14:22',arr:'14:53',type:'區間'},{dep:'14:29',arr:'14:47',type:'莒光'},{dep:'14:52',arr:'15:15',type:'區間'},{dep:'14:58',arr:'15:25',type:'區間'},{dep:'15:08',arr:'15:20',type:'自強'},{dep:'15:28',arr:'15:43',type:'區間快'},{dep:'15:32',arr:'15:54',type:'區間'},{dep:'15:57',arr:'16:14',type:'區間快'},{dep:'16:03',arr:'16:30',type:'區間'},{dep:'16:18',arr:'16:42',type:'區間'},{dep:'16:25',arr:'16:47',type:'區間'},{dep:'16:55',arr:'17:17',type:'區間'},{dep:'17:02',arr:'17:31',type:'區間'},{dep:'17:19',arr:'17:41',type:'區間'},{dep:'17:35',arr:'17:50',type:'自強'},{dep:'17:41',arr:'18:00',type:'區間快'},{dep:'17:54',arr:'18:21',type:'區間'},{dep:'18:29',arr:'18:51',type:'區間'},{dep:'18:47',arr:'19:13',type:'區間'},{dep:'18:55',arr:'19:07',type:'自強'},{dep:'19:03',arr:'19:33',type:'區間'},{dep:'19:28',arr:'19:49',type:'區間'},{dep:'19:35',arr:'20:02',type:'區間'},{dep:'20:06',arr:'20:33',type:'區間'},{dep:'20:17',arr:'20:40',type:'區間'},{dep:'20:37',arr:'20:59',type:'區間'},{dep:'21:02',arr:'21:26',type:'區間'},{dep:'21:16',arr:'21:38',type:'區間'},{dep:'21:40',arr:'22:08',type:'區間'},{dep:'21:48',arr:'22:03',type:'自強'},{dep:'21:55',arr:'22:18',type:'區間'},{dep:'22:16',arr:'22:38',type:'區間'},{dep:'22:43',arr:'23:05',type:'區間'},{dep:'22:51',arr:'23:13',type:'區間'},{dep:'23:13',arr:'23:36',type:'區間'},
@@ -275,7 +352,7 @@ const RETURN=[
   {dep:'05:51',arr:'06:10',type:'區間'},{dep:'06:09',arr:'06:28',type:'區間'},{dep:'06:28',arr:'06:49',type:'區間'},{dep:'06:41',arr:'07:00',type:'區間'},{dep:'07:01',arr:'07:22',type:'區間'},{dep:'07:12',arr:'07:31',type:'區間'},{dep:'07:32',arr:'07:53',type:'區間'},{dep:'07:41',arr:'08:00',type:'區間'},{dep:'08:04',arr:'08:20',type:'區間快'},{dep:'08:16',arr:'08:37',type:'區間'},{dep:'08:47',arr:'09:08',type:'區間'},{dep:'09:01',arr:'09:22',type:'區間'},{dep:'09:22',arr:'09:43',type:'區間'},{dep:'09:33',arr:'09:54',type:'區間'},{dep:'10:01',arr:'10:22',type:'區間'},{dep:'10:10',arr:'10:26',type:'區間快'},{dep:'10:30',arr:'10:51',type:'區間'},{dep:'10:45',arr:'11:01',type:'區間快'},{dep:'11:05',arr:'11:26',type:'區間'},{dep:'11:16',arr:'11:32',type:'區間快'},{dep:'11:30',arr:'11:51',type:'區間'},{dep:'11:56',arr:'12:12',type:'區間快'},{dep:'12:08',arr:'12:29',type:'區間'},{dep:'12:37',arr:'12:59',type:'區間'},{dep:'12:56',arr:'13:18',type:'區間'},{dep:'13:30',arr:'13:52',type:'區間'},{dep:'13:55',arr:'14:23',type:'區間'},{dep:'14:18',arr:'14:40',type:'區間'},{dep:'14:34',arr:'14:55',type:'區間'},{dep:'14:47',arr:'15:02',type:'莒光'},{dep:'14:56',arr:'15:23',type:'區間'},{dep:'15:33',arr:'15:54',type:'區間'},{dep:'15:42',arr:'16:04',type:'區間'},{dep:'16:05',arr:'16:21',type:'自強'},{dep:'16:14',arr:'16:35',type:'區間'},{dep:'16:37',arr:'16:58',type:'區間'},{dep:'16:52',arr:'17:12',type:'區間快'},{dep:'17:06',arr:'17:28',type:'區間'},{dep:'17:14',arr:'17:35',type:'區間'},{dep:'17:28',arr:'17:46',type:'區間快'},{dep:'17:39',arr:'18:00',type:'區間'},{dep:'18:00',arr:'18:18',type:'區間快'},{dep:'18:07',arr:'18:28',type:'區間'},{dep:'18:26',arr:'18:48',type:'區間'},{dep:'18:32',arr:'18:51',type:'區間快'},{dep:'18:50',arr:'19:02',type:'自強3000'},{dep:'19:10',arr:'19:38',type:'區間'},{dep:'19:24',arr:'19:43',type:'區間快'},{dep:'19:41',arr:'20:02',type:'區間'},{dep:'19:48',arr:'20:10',type:'區間'},{dep:'20:06',arr:'20:19',type:'自強'},{dep:'20:09',arr:'20:31',type:'區間'},{dep:'20:32',arr:'20:53',type:'區間'},{dep:'20:50',arr:'21:18',type:'區間'},{dep:'21:07',arr:'21:34',type:'區間'},{dep:'21:47',arr:'22:02',type:'莒光'},{dep:'21:53',arr:'22:15',type:'區間'},{dep:'22:05',arr:'22:33',type:'區間'},{dep:'22:33',arr:'22:53',type:'區間'},{dep:'23:06',arr:'23:19',type:'自強'},{dep:'23:10',arr:'23:32',type:'區間'},{dep:'23:37',arr:'23:59',type:'區間'},
 ];
 
-const CFG={homeToStation:15,boardBuffer:5,bikeToYoga:8,stationToHome:15,bikeToAG:10};
+const CFG={homeToStation:15,boardBuffer:5,bikeToYoga:8,stationToHome:15,bikeToAG:10,earlyArrival:5};
 let selDate=todayStr(),selClass=null,selTrain=null,cd=30;
 
 function todayStr(){const d=new Date();return`${d.getFullYear()}-${p2(d.getMonth()+1)}-${p2(d.getDate())}`}
@@ -285,19 +362,42 @@ function toHM(m){return p2(Math.floor(m/60)%24)+':'+p2(m%60)}
 function nowMin(){const n=new Date();return n.getHours()*60+n.getMinutes()}
 function adj(k,d){CFG[k]=Math.max(1,Math.min(99,CFG[k]+d));document.getElementById(k+'-val').textContent=CFG[k];selTrain=null;compute()}
 
+function setEarly(val){
+  CFG.earlyArrival=val;
+  document.querySelectorAll('.sg-early').forEach(b=>{
+    const v=b.textContent==='不需要'?0:b.textContent==='1.5 小時'?90:parseInt(b.textContent);
+    b.classList.toggle('active',v===val);
+  });
+  const display=document.getElementById('earlyDisplay');
+  if(val===0) display.textContent='不需要提前抵達';
+  else if(val===90) display.textContent='Betty 將提前 1.5 小時（90 分鐘）抵達教室預習';
+  else display.textContent=`Betty 將提前 ${val} 分鐘抵達教室預習`;
+  selTrain=null;compute();
+}
+
 function buildWeek(){
   const el=document.getElementById('weekStrip');el.innerHTML='';
-  const today=new Date();const wd=['日','一','二','三','四','五','六'];
-  for(let i=0;i<14;i++){
-    const d=new Date(today);d.setDate(today.getDate()+i);
+  const today=new Date();today.setHours(0,0,0,0);
+  const wd=['日','一','二','三','四','五','六'];
+  // 找出 SCHEDULE 裡最遠的日期
+  const allDates=SCHEDULE.map(s=>s.date).filter((v,i,a)=>a.indexOf(v)===i).sort();
+  const lastDate=allDates[allDates.length-1];
+  const lastD=new Date(lastDate+'T00:00:00');
+  // 從今天到最後一堂課，逐天產生
+  const d=new Date(today);
+  while(d<=lastD){
     const ds=`${d.getFullYear()}-${p2(d.getMonth()+1)}-${p2(d.getDate())}`;
     const has=SCHEDULE.some(s=>s.date===ds);
-    if(i>7&&!has)continue;
+    const diffDays=Math.round((d-today)/(1000*60*60*24));
+    // 沒有課的日期：只顯示前 7 天，之後跳過
+    if(!has && diffDays>=7){d.setDate(d.getDate()+1);continue;}
     const pill=document.createElement('div');
     pill.className='day-pill'+(ds===selDate?' active':'')+(has?' has-class':'');
-    pill.innerHTML=`<span class="day-wd">${i===0?'今':wd[d.getDay()]}</span><span class="day-num">${d.getDate()}</span>${has?'<span class="day-dot"></span>':'<span style="height:4px"></span>'}`;
-    pill.onclick=()=>{selDate=ds;selClass=null;selTrain=null;buildWeek();buildCards();compute()};
+    const label=diffDays===0?'今':wd[d.getDay()];
+    pill.innerHTML=`<span class="day-wd">${label}</span><span class="day-num">${d.getDate()}</span>${has?'<span class="day-dot"></span>':'<span style="height:4px"></span>'}`;
+    pill.onclick=(ds=>{return()=>{selDate=ds;selClass=null;selTrain=null;buildWeek();buildCards();compute()}})(ds);
     el.appendChild(pill);
+    d.setDate(d.getDate()+1);
   }
 }
 
@@ -342,7 +442,7 @@ function tlS(ic,emoji,state,time,note,chip,desc,last){
 }
 
 function buildTrainOpts(classMin,now,isToday){
-  const latestArr=classMin-CFG.bikeToYoga;
+  const latestArr=classMin-CFG.bikeToYoga-CFG.earlyArrival;
   let recIdx=-1;
   for(let i=0;i<GO.length;i++){if(toMin(GO[i].arr)<=latestArr)recIdx=i}
   const wrap=document.getElementById('trainSelector');
@@ -409,14 +509,19 @@ function renderGo(classMin,now,isToday){
   const t=selTrain;if(!t)return;
   const depMin=toMin(t.dep),arrMin=toMin(t.arr);
   const mustAt=depMin-CFG.boardBuffer,leave=mustAt-CFG.homeToStation;
-  const arrYoga=arrMin+CFG.bikeToYoga,ml=leave-now,buf=classMin-arrYoga;
+  const arrStation=arrMin+CFG.bikeToYoga;
+  const arrYoga=arrStation+CFG.earlyArrival;
+  const targetTime=classMin-CFG.earlyArrival;
+  const ml=leave-now,buf=classMin-arrYoga;
   const hc=!isToday?'':(ml<0?'err':ml<=8?'warn':'ok');
   const mn=!isToday?'出發時間':ml>=0?`距現在還有 ${ml} 分鐘`:`⚠ 已超過 ${Math.abs(ml)} 分`;
   let html='';
   html+=tlS('ic-home','🏠',hc,toHM(leave),mn,`<span class="chip chip-walk">騎機車</span>`,`從<strong>藝術清園</strong>出發<br>→ 台南火車站後站`,false);
   html+=tlS('ic-train','🚉','info',toHM(mustAt),`候車 · ${t.dep} ${t.type}`,`<span class="chip chip-train">${t.type}</span>`,`台南站上車`,false);
   html+=tlS('ic-train','📍','',t.arr,'抵達善化火車站',`<span class="chip chip-bike">腳踏車</span>`,`YouBike 騎 ${CFG.bikeToYoga} 分鐘<br>→ <strong>瑜伽日記</strong> 建國路 140 號`,false);
-  html+=tlS('ic-yoga','🧘',arrYoga<=classMin?'ok':'err',toHM(arrYoga),arrYoga<=classMin?`提前 ${buf} 分鐘抵達 ✓`:`晚 ${arrYoga-classMin} 分鐘 ✗`,`<span class="chip chip-yoga">上課</span>`,`<strong>${selClass.name}</strong>`,true);
+  const earlyNote=CFG.earlyArrival>0?`提前 ${CFG.earlyArrival} 分鐘預習`:'準時抵達';
+  const yogaNote=arrYoga<=classMin?`${earlyNote} ✓`:`晚 ${arrYoga-classMin} 分鐘 ✗`;
+  html+=tlS('ic-yoga','🧘',arrYoga<=classMin?'ok':'err',toHM(arrStation),yogaNote,`<span class="chip chip-yoga">上課</span>`,`<strong>${selClass.name}</strong>${CFG.earlyArrival>0?`<br>上課時間 ${toHM(classMin)}`:''}`,true);
   document.getElementById('goTimeline').innerHTML=html;
   let a='';
   if(isToday){
@@ -444,12 +549,12 @@ function compute(){
     document.getElementById('cfg-bikeToAG').style.display='';
     ['trainSelectorSection','returnSection'].forEach(id=>document.getElementById(id).style.display='none');
     document.getElementById('goSecNum').textContent='3';
-    const buf=8,ride=CFG.bikeToAG,leave=classMin-buf-ride,arrive=leave+ride,ml=leave-now;
+    const buf=CFG.earlyArrival,ride=CFG.bikeToAG,leave=classMin-buf-ride,arrive=leave+ride,ml=leave-now;
     const hc=!isToday?'':(ml<0?'err':ml<=8?'warn':'ok');
     const mn=!isToday?'出發時間':ml>=0?`距現在還有 ${ml} 分鐘`:`⚠ 已超過 ${Math.abs(ml)} 分`;
     let html='';
     html+=tlS('ic-home','🏠',hc,toHM(leave),mn,`<span class="chip chip-walk">騎機車</span>`,`從<strong>藝術清園</strong>出發<br>→ 崇善路 435 號 AG 紅光瑜伽`,false);
-    html+=tlS('ic-yoga','🧘','ok',toHM(arrive),`提前 ${buf} 分鐘抵達 ✓`,`<span class="chip chip-yoga">上課</span>`,`<strong>AG 紅光瑜伽</strong>`,true);
+    html+=tlS('ic-yoga','🧘','ok',toHM(arrive),`提前 ${buf} 分鐘抵達預習 ✓`,`<span class="chip chip-yoga">上課</span>`,`<strong>AG 紅光瑜伽</strong>${buf>0?`<br>上課時間 ${toHM(classMin)}`:''}`,true);
     document.getElementById('goTimeline').innerHTML=html;
     let a='';
     if(isToday){

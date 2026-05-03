@@ -29,6 +29,54 @@
   --gray4:#b0b0b0;
   --gray5:#ebebeb;
 }
+html.dark{
+  --bg:#111111;
+  --white:#1c1c1e;
+  --border:#2c2c2e;
+  --border2:#3a3a3c;
+  --shadow-sm:0 1px 2px rgba(0,0,0,0.3);
+  --shadow-md:0 2px 8px rgba(0,0,0,0.4);
+  --accent:#00b4bb;
+  --accent-bg:#0a2e2f;
+  --accent-dark:#00d4dc;
+  --rose:#ff6b6f;
+  --rose-bg:#2a1515;
+  --green:#00c47a;
+  --green-bg:#0a2a1a;
+  --amber:#e89400;
+  --amber-bg:#2a1f00;
+  --gray1:#f0f0f0;
+  --gray2:#c0c0c0;
+  --gray3:#888888;
+  --gray4:#555555;
+  --gray5:#2c2c2e;
+}
+
+/* ══ DARK MODE TOGGLE ══ */
+.dm-toggle{
+  display:flex;align-items:center;justify-content:center;
+  width:36px;height:36px;border-radius:50%;
+  border:1.5px solid var(--border2);background:var(--bg);
+  cursor:pointer;font-size:16px;transition:all 0.2s;
+  -webkit-tap-highlight-color:transparent;flex-shrink:0;
+}
+.dm-toggle:active{transform:scale(0.9)}
+
+/* ══ TOAST ══ */
+.toast-wrap{
+  position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(80px);
+  z-index:999;transition:transform 0.3s cubic-bezier(0.34,1.56,0.64,1),opacity 0.3s;
+  opacity:0;pointer-events:none;
+}
+.toast-wrap.show{transform:translateX(-50%) translateY(0);opacity:1}
+.toast{
+  background:var(--gray1);color:var(--bg);
+  padding:10px 18px;border-radius:40px;
+  font-size:13px;font-weight:600;white-space:nowrap;
+  box-shadow:0 4px 20px rgba(0,0,0,0.2);
+  display:flex;align-items:center;gap:8px;
+}
+.toast-icon{font-size:15px}
 html{-webkit-text-size-adjust:100%}
 body{background:var(--bg);color:var(--gray1);font-family:'Noto Sans TC',sans-serif;min-height:100vh;padding-bottom:64px;font-size:15px}
 
@@ -56,6 +104,8 @@ body{background:var(--bg);color:var(--gray1);font-family:'Noto Sans TC',sans-ser
 .day-pill.active .day-wd{color:rgba(255,255,255,0.55)}
 .day-num{font-family:'DM Mono',monospace;font-size:17px;font-weight:500;color:var(--gray2)}
 .day-pill.active .day-num{color:#fff}
+.day-pill.past{opacity:0.35}
+.day-pill.past.active{opacity:1}
 .day-dot{width:4px;height:4px;border-radius:50%;background:var(--rose)}
 .day-pill.active .day-dot{background:rgba(255,255,255,0.5)}
 
@@ -86,6 +136,11 @@ body{background:var(--bg);color:var(--gray1);font-family:'Noto Sans TC',sans-ser
 .cc-check{width:24px;height:24px;border-radius:50%;border:1.5px solid var(--border2);display:flex;align-items:center;justify-content:center;font-size:11px;color:transparent;transition:all 0.12s;margin-left:12px;flex-shrink:0}
 .cc.sel .cc-check{background:var(--gray1);border-color:var(--gray1);color:#fff}
 .no-class{padding:24px 0;text-align:center;font-size:14px;color:var(--gray4)}
+.no-class-day{
+  padding:40px 20px;text-align:center;
+}
+.no-class-emoji{font-size:48px;margin-bottom:12px}
+.no-class-msg{font-size:18px;font-weight:700;color:var(--gray2);letter-spacing:0.3px}
 
 /* ══ SETTINGS ══ */
 .sg-grid{display:flex;flex-direction:column;gap:8px}
@@ -230,6 +285,14 @@ body{background:var(--bg);color:var(--gray1);font-family:'Noto Sans TC',sans-ser
 
 /* ══ FOOTER ══ */
 .footer{padding:24px 0 0;text-align:center;font-size:11px;color:var(--gray4);line-height:2}
+
+/* ══ FLASH ANIMATION ══ */
+@keyframes flashBorder{
+  0%{box-shadow:0 0 0 0 rgba(0,132,137,0.6)}
+  50%{box-shadow:0 0 0 6px rgba(0,132,137,0)}
+  100%{box-shadow:0 0 0 0 rgba(0,132,137,0)}
+}
+.flash-update{animation:flashBorder 0.7s ease-out}
 </style>
 </head>
 <body>
@@ -241,13 +304,24 @@ body{background:var(--bg);color:var(--gray1);font-family:'Noto Sans TC',sans-ser
       <div class="tb-title">今日出行規劃</div>
     </div>
     <div class="tb-right">
-      <div class="tb-clock" id="clock">--:--</div>
+      <div style="display:flex;align-items:center;gap:10px">
+        <div class="dm-toggle" id="dmToggle" onclick="toggleDark()">🌙</div>
+        <div class="tb-clock" id="clock">--:--</div>
+      </div>
       <div class="tb-refresh">
         <span class="tb-rlabel">更新</span>
         <div class="tb-bar-wrap"><div class="tb-bar" id="refreshBar" style="width:100%"></div></div>
         <span class="tb-sec" id="refreshSec">30</span>
       </div>
     </div>
+  </div>
+</div>
+
+<!-- Toast -->
+<div class="toast-wrap" id="toastWrap">
+  <div class="toast" id="toastMsg">
+    <span class="toast-icon">✓</span>
+    <span id="toastText"></span>
   </div>
 </div>
 
@@ -258,7 +332,7 @@ body{background:var(--bg);color:var(--gray1);font-family:'Noto Sans TC',sans-ser
   <div class="class-list" id="classCards"><div class="no-class">請選擇日期</div></div>
 
   <div class="sec-hd"><div class="sec-step">2</div><div class="sec-title">時間設定</div><div class="sec-hr"></div></div>
-  <div class="sg-grid">
+  <div class="sg-grid" id="settingsSection">
     <div class="sg-card" id="cfg-homeToStation">
       <div class="sg-label">藝術清園 → 台南站
         <span class="sg-label-sub">騎機車出發時間</span>
@@ -330,8 +404,7 @@ body{background:var(--bg);color:var(--gray1);font-family:'Noto Sans TC',sans-ser
   </div>
 
   <div id="goSection">
-    <div class="sec-hd"><div class="sec-step" id="goSecNum">3</div><div class="sec-title">去程規劃</div><div class="sec-hr"></div></div>
-    <div class="tl" id="goTimeline"><div class="no-class">請選擇課程</div></div>
+    <div class="sec-hd"><div class="sec-step" id="goSecNum">3</div><div class="sec-title">去程規劃</div><div class="sec-hr"></div></div>    <div class="tl" id="goTimeline"><div class="no-class">請選擇課程</div></div>
     <div id="tipBtnWrap"></div>
   </div>
 
@@ -421,7 +494,43 @@ function p2(n){return String(n).padStart(2,'0')}
 function toMin(t){const[h,m]=t.split(':').map(Number);return h*60+m}
 function toHM(m){return p2(Math.floor(m/60)%24)+':'+p2(m%60)}
 function nowMin(){const n=new Date();return n.getHours()*60+n.getMinutes()}
-function adj(k,d){CFG[k]=Math.max(1,Math.min(99,CFG[k]+d));document.getElementById(k+'-val').textContent=CFG[k];selTrain=null;compute()}
+
+// ── Dark mode ──
+let isDark=false;
+function toggleDark(){
+  isDark=!isDark;
+  document.documentElement.classList.toggle('dark',isDark);
+  document.getElementById('dmToggle').textContent=isDark?'☀️':'🌙';
+  showToast(isDark?'深色模式':'淺色模式',isDark?'🌙':'☀️');
+}
+
+// ── Toast ──
+let toastTimer=null;
+function showToast(msg,icon='✓'){
+  const wrap=document.getElementById('toastWrap');
+  document.getElementById('toastText').textContent=msg;
+  document.querySelector('.toast-icon').textContent=icon;
+  wrap.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer=setTimeout(()=>wrap.classList.remove('show'),2000);
+}
+
+// ── Flash updated section ──
+function flashSection(id){
+  const el=document.getElementById(id);if(!el)return;
+  el.classList.add('flash-update');
+  setTimeout(()=>el.classList.remove('flash-update'),700);
+}
+
+function adj(k,d){
+  CFG[k]=Math.max(1,Math.min(99,CFG[k]+d));
+  document.getElementById(k+'-val').textContent=CFG[k];
+  selTrain=null;
+  const labels={homeToStation:'出發時間',boardBuffer:'候車緩衝',bikeToYoga:'腳踏車時間',bikeToAG:'騎車時間'};
+  showToast(`${labels[k]||'設定'} → ${CFG[k]} 分鐘`,'⏱');
+  compute();
+  setTimeout(()=>flashSection('goTimeline'),50);
+}
 
 function setEarly(val){
   CFG.earlyArrival=val;
@@ -429,39 +538,81 @@ function setEarly(val){
     const v=b.textContent==='不需要'?0:b.textContent==='1.5時'?90:parseInt(b.textContent);
     b.classList.toggle('active',v===val);
   });
+  const msg=val===0?'不需要提前':val===90?'提前 1.5 小時':`提前 ${val} 分鐘`;
+  showToast(`Betty ${msg}到達`,'🧘');
   selTrain=null;compute();
+  setTimeout(()=>flashSection('goTimeline'),50);
 }
 
 function buildWeek(){
   const el=document.getElementById('weekStrip');el.innerHTML='';
   const today=new Date();today.setHours(0,0,0,0);
   const wd=['日','一','二','三','四','五','六'];
-  // 找出 SCHEDULE 裡最遠的日期
-  const allDates=SCHEDULE.map(s=>s.date).filter((v,i,a)=>a.indexOf(v)===i).sort();
-  const lastDate=allDates[allDates.length-1];
-  const lastD=new Date(lastDate+'T00:00:00');
-  // 從今天到最後一堂課，逐天產生
-  const d=new Date(today);
-  while(d<=lastD){
+  const yr=today.getFullYear(),mo=today.getMonth();
+  const firstDay=new Date(yr,mo,1);
+  const lastDay=new Date(yr,mo+1,0);
+
+  for(let d=new Date(firstDay);d<=lastDay;d.setDate(d.getDate()+1)){
     const ds=`${d.getFullYear()}-${p2(d.getMonth()+1)}-${p2(d.getDate())}`;
     const has=SCHEDULE.some(s=>s.date===ds);
-    const diffDays=Math.round((d-today)/(1000*60*60*24));
-    // 沒有課的日期：只顯示前 7 天，之後跳過
-    if(!has && diffDays>=7){d.setDate(d.getDate()+1);continue;}
+    const isPast=d<today;
+    const isToday=d.getTime()===today.getTime();
+    const isActive=ds===selDate;
+
     const pill=document.createElement('div');
-    pill.className='day-pill'+(ds===selDate?' active':'')+(has?' has-class':'');
-    const label=diffDays===0?'今':wd[d.getDay()];
-    pill.innerHTML=`<span class="day-wd">${label}</span><span class="day-num">${d.getDate()}</span>${has?'<span class="day-dot"></span>':'<span style="height:4px"></span>'}`;
-    pill.onclick=(ds=>{return()=>{selDate=ds;selClass=null;selTrain=null;buildWeek();buildCards();compute()}})(ds);
+    let cls='day-pill';
+    if(isPast) cls+=' past';
+    else if(has) cls+=' has-class';
+    if(isActive) cls+=' active';
+    pill.className=cls;
+    pill.dataset.ds=ds;
+
+    pill.innerHTML=`
+      <span class="day-wd">${isToday?'今':wd[d.getDay()]}</span>
+      <span class="day-num">${d.getDate()}</span>
+      ${has?'<span class="day-dot"></span>':'<span style="height:4px"></span>'}
+    `;
+
+    // 所有日期都可以點擊
+    const _ds=ds;
+    pill.onclick=()=>{selDate=_ds;selClass=null;selTrain=null;buildWeek();buildCards();compute()};
     el.appendChild(pill);
-    d.setDate(d.getDate()+1);
+  }
+
+  // scroll 讓昨天露出一點點，今天排在接近最左
+  const yesterday=new Date(today);yesterday.setDate(today.getDate()-1);
+  const ydStr=`${yesterday.getFullYear()}-${p2(yesterday.getMonth()+1)}-${p2(yesterday.getDate())}`;
+  const ydPill=el.querySelector(`[data-ds="${ydStr}"]`);
+  if(ydPill){
+    // 讓昨天的 pill 左邊對齊容器，今天自然排在緊接其後
+    const pillW=ydPill.offsetWidth;
+    el.scrollLeft=ydPill.offsetLeft - 8; // 露出昨天約半顆
   }
 }
 
 function buildCards(){
   const wrap=document.getElementById('classCards');
   const list=SCHEDULE.filter(s=>s.date===selDate);
-  if(!list.length){wrap.innerHTML='<div class="no-class">今日無課程</div>';return}
+
+  if(!list.length){
+    // 無課程：隱藏所有內容區塊，只顯示空狀態文案
+    wrap.innerHTML=`
+      <div class="no-class-day">
+        <div class="no-class-emoji">🌿</div>
+        <div class="no-class-msg">今日無課程，開心過日子</div>
+      </div>`;
+    document.getElementById('settingsSection').style.display='none';
+    document.getElementById('alertBox').innerHTML='';
+    document.getElementById('trainSelectorSection').style.display='none';
+    document.getElementById('goSection').style.display='none';
+    document.getElementById('returnSection').style.display='none';
+    return;
+  }
+
+  // 有課程：顯示所有區塊
+  document.getElementById('settingsSection').style.display='';
+  document.getElementById('goSection').style.display='';
+
   if(!selClass||!list.find(c=>c.name===selClass.name&&c.start===selClass.start)){selClass=list[0];selTrain=null}
   wrap.innerHTML='';
   list.forEach(c=>{

@@ -845,9 +845,9 @@ function tick(){
   if(tb&&ws){
     const h=tb.offsetHeight;
     ws.style.top=h+'px';
-    // 同時讓 .body 有足夠的 padding-top
+    // body padding-top = week-strip 高度 + 24px 間距
     const bd=document.querySelector('.body');
-    if(bd)bd.style.paddingTop=(h+ws.offsetHeight+8)+'px';
+    if(bd)bd.style.paddingTop=(ws.offsetHeight+24)+'px';
   }
 })();
 buildWeek();

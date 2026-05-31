@@ -413,71 +413,37 @@ body{background:var(--bg);color:var(--gray1);font-family:'Noto Sans TC',sans-ser
     <div class="tl" id="returnTimeline"></div>
   </div>
 
-  <div class="footer">課表來源：Google Calendar（b.Daily）・ 台鐵時刻表 2026<br>課表涵蓋至 2026/5/30 ・ 計算每 30 秒自動更新</div>
+  <div class="footer">課表來源：Google Calendar（b.Daily）・ 台鐵時刻表 2026<br>課表更新：<span id="scheduleUpdatedAt">載入中…</span> ・ 計算每 30 秒自動更新</div>
 </div>
 
 <script>
-const SCHEDULE=[
-  // 5/2
-  {date:'2026-05-02',name:'AG 紅光瑜伽',start:'12:15',end:'13:15',type:'local',addr:'東區崇善路 435 號 1F'},
-  {date:'2026-05-02',name:'AD 瑜伽輪流動',start:'16:00',end:'17:00',type:'train',addr:'善化建國路 140 號 2F'},
-  // 5/4
-  {date:'2026-05-04',name:'AG 紅光瑜伽',start:'10:45',end:'11:45',type:'local',addr:'東區崇善路 435 號 1F'},
-  {date:'2026-05-04',name:'AD 陰瑜伽',start:'19:45',end:'20:45',type:'train',addr:'善化建國路 140 號 2F'},
-  // 5/5
-  {date:'2026-05-05',name:'AG 紅光瑜伽',start:'12:15',end:'13:15',type:'local',addr:'東區崇善路 435 號 1F'},
-  // 5/6
-  {date:'2026-05-06',name:'AD 慢流動',start:'11:00',end:'12:00',type:'train',addr:'善化建國路 140 號 2F'},
-  // 5/8
-  {date:'2026-05-08',name:'AG 紅光瑜伽',start:'12:15',end:'13:15',type:'local',addr:'東區崇善路 435 號 1F'},
-  {date:'2026-05-08',name:'AD 和緩流動',start:'18:00',end:'19:00',type:'train',addr:'善化建國路 140 號 2F'},
-  {date:'2026-05-08',name:'AD 瑜伽輪伸展',start:'19:15',end:'20:15',type:'train',addr:'善化建國路 140 號 2F'},
-  // 5/9
-  {date:'2026-05-09',name:'AG 紅光瑜伽',start:'12:15',end:'13:15',type:'local',addr:'東區崇善路 435 號 1F'},
-  {date:'2026-05-09',name:'AD 瑜伽輪流動',start:'16:00',end:'17:00',type:'train',addr:'善化建國路 140 號 2F'},
-  // 5/11
-  {date:'2026-05-11',name:'AG 紅光瑜伽',start:'10:45',end:'11:45',type:'local',addr:'東區崇善路 435 號 1F'},
-  {date:'2026-05-11',name:'AD 陰瑜伽',start:'19:45',end:'20:45',type:'train',addr:'善化建國路 140 號 2F'},
-  // 5/12
-  {date:'2026-05-12',name:'AG 紅光瑜伽',start:'12:15',end:'13:15',type:'local',addr:'東區崇善路 435 號 1F'},
-  // 5/13
-  {date:'2026-05-13',name:'AD 慢流動',start:'11:00',end:'12:00',type:'train',addr:'善化建國路 140 號 2F'},
-  // 5/15
-  {date:'2026-05-15',name:'AG 紅光瑜伽',start:'12:15',end:'13:15',type:'local',addr:'東區崇善路 435 號 1F'},
-  {date:'2026-05-15',name:'AD 和緩流動',start:'18:00',end:'19:00',type:'train',addr:'善化建國路 140 號 2F'},
-  {date:'2026-05-15',name:'AD 瑜伽輪伸展',start:'19:15',end:'20:15',type:'train',addr:'善化建國路 140 號 2F'},
-  // 5/16
-  {date:'2026-05-16',name:'AG 紅光瑜伽',start:'12:15',end:'13:15',type:'local',addr:'東區崇善路 435 號 1F'},
-  {date:'2026-05-16',name:'AD 瑜伽輪流動',start:'16:00',end:'17:00',type:'train',addr:'善化建國路 140 號 2F'},
-  // 5/18
-  {date:'2026-05-18',name:'AG 紅光瑜伽',start:'10:45',end:'11:45',type:'local',addr:'東區崇善路 435 號 1F'},
-  {date:'2026-05-18',name:'AD 陰瑜伽',start:'19:45',end:'20:45',type:'train',addr:'善化建國路 140 號 2F'},
-  // 5/19
-  {date:'2026-05-19',name:'AG 紅光瑜伽',start:'12:15',end:'13:15',type:'local',addr:'東區崇善路 435 號 1F'},
-  // 5/20
-  {date:'2026-05-20',name:'AD 慢流動',start:'11:00',end:'12:00',type:'train',addr:'善化建國路 140 號 2F'},
-  // 5/22
-  {date:'2026-05-22',name:'AG 紅光瑜伽',start:'12:15',end:'13:15',type:'local',addr:'東區崇善路 435 號 1F'},
-  {date:'2026-05-22',name:'AD 和緩流動',start:'18:00',end:'19:00',type:'train',addr:'善化建國路 140 號 2F'},
-  {date:'2026-05-22',name:'AD 瑜伽輪伸展',start:'19:15',end:'20:15',type:'train',addr:'善化建國路 140 號 2F'},
-  // 5/23
-  {date:'2026-05-23',name:'AG 紅光瑜伽',start:'12:15',end:'13:15',type:'local',addr:'東區崇善路 435 號 1F'},
-  {date:'2026-05-23',name:'AD 瑜伽輪流動',start:'16:00',end:'17:00',type:'train',addr:'善化建國路 140 號 2F'},
-  // 5/25
-  {date:'2026-05-25',name:'AG 紅光瑜伽',start:'10:45',end:'11:45',type:'local',addr:'東區崇善路 435 號 1F'},
-  {date:'2026-05-25',name:'AD 陰瑜伽',start:'19:45',end:'20:45',type:'train',addr:'善化建國路 140 號 2F'},
-  // 5/26
-  {date:'2026-05-26',name:'AG 紅光瑜伽',start:'12:15',end:'13:15',type:'local',addr:'東區崇善路 435 號 1F'},
-  // 5/27
-  {date:'2026-05-27',name:'AD 慢流動',start:'11:00',end:'12:00',type:'train',addr:'善化建國路 140 號 2F'},
-  // 5/29
-  {date:'2026-05-29',name:'AG 紅光瑜伽',start:'12:15',end:'13:15',type:'local',addr:'東區崇善路 435 號 1F'},
-  {date:'2026-05-29',name:'AD 和緩流動',start:'18:00',end:'19:00',type:'train',addr:'善化建國路 140 號 2F'},
-  {date:'2026-05-29',name:'AD 瑜伽輪伸展',start:'19:15',end:'20:15',type:'train',addr:'善化建國路 140 號 2F'},
-  // 5/30
-  {date:'2026-05-30',name:'AG 紅光瑜伽',start:'12:15',end:'13:15',type:'local',addr:'東區崇善路 435 號 1F'},
-  {date:'2026-05-30',name:'AD 瑜伽輪流動',start:'16:00',end:'17:00',type:'train',addr:'善化建國路 140 號 2F'},
-];
+// SCHEDULE 由 schedule.json 動態載入，初始為空
+let SCHEDULE=[];
+
+async function loadSchedule(){
+  try{
+    const res=await fetch('schedule.json?t='+Date.now());
+    if(!res.ok)throw new Error('HTTP '+res.status);
+    const data=await res.json();
+    // 將 schedule.json 格式轉換成原有的 SCHEDULE 格式
+    SCHEDULE=(data.schedule||[]).map(c=>({
+      date:c.date,
+      name:c.summary||c.location,
+      start:c.startTime,
+      end:c.endTime||'',
+      type:c.transport==='train'?'train':'local',
+      addr:c.address||''
+    }));
+    const updEl=document.getElementById('scheduleUpdatedAt');
+    if(updEl)updEl.textContent=data.updatedAt||'未知';
+  }catch(e){
+    console.error('無法載入 schedule.json',e);
+    const updEl=document.getElementById('scheduleUpdatedAt');
+    if(updEl)updEl.textContent='載入失敗';
+  }
+  buildWeek();buildCards();compute();tick();setInterval(tick,1000);
+}
+
 const GO=[
   {dep:'06:24',arr:'06:47',type:'區間'},{dep:'06:41',arr:'07:10',type:'區間'},{dep:'06:52',arr:'07:04',type:'自強'},{dep:'07:05',arr:'07:28',type:'區間'},{dep:'07:25',arr:'07:53',type:'區間'},{dep:'07:36',arr:'07:58',type:'區間'},{dep:'07:47',arr:'08:03',type:'區間快'},{dep:'08:05',arr:'08:28',type:'區間'},{dep:'08:18',arr:'08:43',type:'區間'},{dep:'08:46',arr:'09:08',type:'區間'},{dep:'09:05',arr:'09:30',type:'區間'},{dep:'09:13',arr:'09:41',type:'區間'},{dep:'09:39',arr:'10:02',type:'區間'},{dep:'09:54',arr:'10:18',type:'區間'},{dep:'10:10',arr:'10:34',type:'區間'},{dep:'10:38',arr:'11:06',type:'區間'},{dep:'10:55',arr:'11:21',type:'區間'},{dep:'11:00',arr:'11:12',type:'自強'},{dep:'11:09',arr:'11:35',type:'區間'},{dep:'11:18',arr:'11:46',type:'區間'},{dep:'11:33',arr:'11:57',type:'區間'},{dep:'11:44',arr:'11:56',type:'自強'},{dep:'11:52',arr:'12:20',type:'區間'},{dep:'12:06',arr:'12:28',type:'區間'},{dep:'12:41',arr:'13:00',type:'區間快'},{dep:'12:50',arr:'13:18',type:'區間'},{dep:'13:11',arr:'13:38',type:'區間'},{dep:'13:36',arr:'13:58',type:'區間'},{dep:'13:49',arr:'14:11',type:'區間'},{dep:'14:22',arr:'14:53',type:'區間'},{dep:'14:29',arr:'14:47',type:'莒光'},{dep:'14:52',arr:'15:15',type:'區間'},{dep:'14:58',arr:'15:25',type:'區間'},{dep:'15:08',arr:'15:20',type:'自強'},{dep:'15:28',arr:'15:43',type:'區間快'},{dep:'15:32',arr:'15:54',type:'區間'},{dep:'15:57',arr:'16:14',type:'區間快'},{dep:'16:03',arr:'16:30',type:'區間'},{dep:'16:18',arr:'16:42',type:'區間'},{dep:'16:25',arr:'16:47',type:'區間'},{dep:'16:55',arr:'17:17',type:'區間'},{dep:'17:02',arr:'17:31',type:'區間'},{dep:'17:19',arr:'17:41',type:'區間'},{dep:'17:35',arr:'17:50',type:'自強'},{dep:'17:41',arr:'18:00',type:'區間快'},{dep:'17:54',arr:'18:21',type:'區間'},{dep:'18:29',arr:'18:51',type:'區間'},{dep:'18:47',arr:'19:13',type:'區間'},{dep:'18:55',arr:'19:07',type:'自強'},{dep:'19:03',arr:'19:33',type:'區間'},{dep:'19:28',arr:'19:49',type:'區間'},{dep:'19:35',arr:'20:02',type:'區間'},{dep:'20:06',arr:'20:33',type:'區間'},{dep:'20:17',arr:'20:40',type:'區間'},{dep:'20:37',arr:'20:59',type:'區間'},{dep:'21:02',arr:'21:26',type:'區間'},{dep:'21:16',arr:'21:38',type:'區間'},{dep:'21:40',arr:'22:08',type:'區間'},{dep:'21:48',arr:'22:03',type:'自強'},{dep:'21:55',arr:'22:18',type:'區間'},{dep:'22:16',arr:'22:38',type:'區間'},{dep:'22:43',arr:'23:05',type:'區間'},{dep:'22:51',arr:'23:13',type:'區間'},{dep:'23:13',arr:'23:36',type:'區間'},
 ];
@@ -817,7 +783,9 @@ function tick(){
   document.getElementById('refreshBar').style.width=(cd/30*100)+'%';
   document.getElementById('refreshSec').textContent=cd;
 }
-buildWeek();buildCards();compute();tick();setInterval(tick,1000);
+// 初始化：先把週曆畫出來（此時 SCHEDULE 還是空的），再非同步載入課表
+buildWeek();
+loadSchedule();  // 載入完成後內部會呼叫 buildWeek/buildCards/compute/tick
 </script>
 </body>
 </html>

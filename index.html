@@ -514,9 +514,8 @@ function buildWeek(){
   const el=document.getElementById('weekStrip');el.innerHTML='';
   const today=new Date();today.setHours(0,0,0,0);
   const wd=['日','一','二','三','四','五','六'];
-  const yr=today.getFullYear(),mo=today.getMonth();
-  const firstDay=new Date(yr,mo,1);
-  const lastDay=new Date(yr,mo+1,0);
+  const firstDay=new Date(today);firstDay.setDate(today.getDate()-1);
+  const lastDay=new Date(today);lastDay.setDate(today.getDate()+60);
 
   for(let d=new Date(firstDay);d<=lastDay;d.setDate(d.getDate()+1)){
     const ds=`${d.getFullYear()}-${p2(d.getMonth()+1)}-${p2(d.getDate())}`;
@@ -709,6 +708,14 @@ function renderGo(classMin,now,isToday){
         </div>
         <div class="tip-btn-arrow">→</div>
       </a>
+      <a class="tip-btn" href="https://tip.railway.gov.tw/tra-tip-web/tip/tip001/tip112/gobytime" target="_blank" rel="noopener" style="background:var(--accent)">
+        <div class="tip-btn-left">
+          <div class="tip-btn-eyebrow">台鐵 · 即時列車動態</div>
+          <div class="tip-btn-main">查詢列車是否誤點</div>
+          <div class="tip-btn-sub">點此開啟台鐵即時動態頁面</div>
+        </div>
+        <div class="tip-btn-arrow">→</div>
+      </a>
     </div>
   `;
   let a='';
@@ -760,7 +767,7 @@ function compute(){
     document.getElementById('goSecNum').textContent='4';
     buildTrainOpts(classMin,now,isToday);
     renderGo(classMin,now,isToday);
-    const endMin=classMin+60;
+    const endMin=toMin(selClass.end||toHM(classMin+60))+15; // 下課後+15分鐘收拾場地
     let ret=null;
     for(const t of RETURN){if(toMin(t.dep)>=endMin+CFG.boardBuffer){ret=t;break}}
     if(!ret){document.getElementById('returnTimeline').innerHTML='<div class="no-class" style="color:var(--rose)">今日已無回程班次</div>';return}
@@ -768,7 +775,7 @@ function compute(){
     const yc=!isToday?'':(yl<0?'err':yl<=10?'warn':'ok');
     const yn=!isToday?'出門接人時間':yl>=0?`距現在 ${yl} 分鐘後出發`:'⚠ 請立刻出發接人';
     let html='';
-    html+=tlS('ic-yoga','🧘','',toHM(endMin),'下課，前往善化車站',`<span class="chip chip-bike">腳踏車</span>`,`YouBike 騎回善化站`,false);
+    html+=tlS('ic-yoga','🧘','',toHM(toMin(selClass.end||toHM(classMin+60))),'下課・收拾場地 15 分鐘',`<span class="chip chip-bike">腳踏車</span>`,`YouBike 騎回善化站`,false);
     html+=tlS('ic-train','🚉','info',ret.dep,'善化上車',`<span class="chip chip-train">${ret.type}</span>`,`約 16–21 分鐘抵台南`,false);
     html+=tlS('ic-train','🚉','ok',ret.arr,'抵達台南火車站後站',`<span class="chip chip-ret">後站出站</span>`,`Betty 抵達台南`,false);
     html+=tlS('ic-home','🏠',yc,toHM(youLeave),yn,`<span class="chip chip-walk">騎機車</span>`,`從<strong>藝術清園</strong>出發<br>→ 台南後站接 Betty`,true);

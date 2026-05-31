@@ -81,7 +81,7 @@ html{-webkit-text-size-adjust:100%}
 body{background:var(--bg);color:var(--gray1);font-family:'Noto Sans TC',sans-serif;min-height:100vh;padding-bottom:64px;font-size:15px}
 
 /* ══ TOP BAR ══ */
-.topbar{background:var(--white);border-bottom:1px solid var(--border);padding:0 20px;position:sticky;top:0;z-index:100}
+.topbar{background:var(--white);border-bottom:1px solid var(--border);padding:0 20px;position:sticky;top:0;z-index:100;transition:transform 0.3s ease}
 .topbar-inner{display:flex;align-items:center;justify-content:space-between;padding:14px 0 12px;gap:12px}
 .tb-left{display:flex;flex-direction:column;gap:2px}
 .tb-eyebrow{font-size:11px;color:var(--rose);font-weight:700;letter-spacing:0.8px;text-transform:uppercase}
@@ -95,7 +95,7 @@ body{background:var(--bg);color:var(--gray1);font-family:'Noto Sans TC',sans-ser
 .tb-sec{font-family:'DM Mono',monospace;font-size:10px;color:var(--gray4);min-width:18px;text-align:right}
 
 /* ══ WEEK STRIP ══ */
-.week-strip{background:var(--white);border-bottom:1px solid var(--border);padding:12px 16px;display:flex;gap:4px;overflow-x:auto;scrollbar-width:none}
+.week-strip{background:var(--white);border-bottom:1px solid var(--border);padding:12px 16px;display:flex;gap:4px;overflow-x:auto;scrollbar-width:none;position:sticky;top:var(--topbar-h,73px);z-index:99}
 .week-strip::-webkit-scrollbar{display:none}
 .day-pill{flex-shrink:0;display:flex;flex-direction:column;align-items:center;gap:4px;padding:8px 10px;border-radius:12px;cursor:pointer;transition:all 0.12s;border:1.5px solid transparent;min-width:46px;-webkit-tap-highlight-color:transparent}
 .day-pill.has-class{border-color:var(--border2)}
@@ -410,6 +410,7 @@ body{background:var(--bg);color:var(--gray1);font-family:'Noto Sans TC',sans-ser
 
   <div id="returnSection" style="display:none">
     <div class="sec-hd"><div class="sec-step">4</div><div class="sec-title">回程 / 接 Betty</div><div class="sec-hr"></div></div>
+    <div class="train-list" id="returnSelector" style="margin-bottom:12px"></div>
     <div class="tl" id="returnTimeline"></div>
   </div>
 
@@ -453,7 +454,7 @@ const RETURN=[
 
 // stationToHome 預設 20 分（接 Betty 回家），欄位隱藏，資料仍保留計算用
 const CFG={homeToStation:20,boardBuffer:10,bikeToYoga:15,stationToHome:20,bikeToAG:10,earlyArrival:5};
-let selDate=todayStr(),selClass=null,selTrain=null,cd=30;
+let selDate=todayStr(),selClass=null,selTrain=null,selRetTrain=null,cd=30;
 
 function todayStr(){const d=new Date();return`${d.getFullYear()}-${p2(d.getMonth()+1)}-${p2(d.getDate())}`}
 function p2(n){return String(n).padStart(2,'0')}
@@ -510,6 +511,34 @@ function setEarly(val){
   setTimeout(()=>flashSection('goTimeline'),50);
 }
 
+
+// ── Header 隱藏/顯示（向下捲隱藏，向上捲顯示）──
+let lastScrollY=0;
+function updateHeaderOnScroll(){
+  const topbar=document.querySelector('.topbar');
+  const weekStrip=document.querySelector('.week-strip');
+  if(!topbar||!weekStrip)return;
+  const topbarH=topbar.offsetHeight;
+  const scrollY=window.scrollY||document.documentElement.scrollTop;
+  if(scrollY>lastScrollY&&scrollY>topbarH){
+    // 往下捲：隱藏 header
+    topbar.style.transform=`translateY(-${topbarH}px)`;
+    weekStrip.style.top='0px';
+  } else {
+    // 往上捲：顯示 header
+    topbar.style.transform='translateY(0)';
+    weekStrip.style.top=topbarH+'px';
+  }
+  lastScrollY=scrollY<=0?0:scrollY;
+}
+window.addEventListener('scroll',updateHeaderOnScroll,{passive:true});
+// 初始設定 week-strip top
+window.addEventListener('load',()=>{
+  const topbar=document.querySelector('.topbar');
+  const weekStrip=document.querySelector('.week-strip');
+  if(topbar&&weekStrip)weekStrip.style.top=topbar.offsetHeight+'px';
+});
+
 function buildWeek(){
   const el=document.getElementById('weekStrip');el.innerHTML='';
   const today=new Date();today.setHours(0,0,0,0);
@@ -540,18 +569,16 @@ function buildWeek(){
 
     // 所有日期都可以點擊
     const _ds=ds;
-    pill.onclick=()=>{selDate=_ds;selClass=null;selTrain=null;buildWeek();buildCards();compute()};
+    pill.onclick=()=>{selDate=_ds;selClass=null;selTrain=null;selRetTrain=null;buildWeek();buildCards();compute()};
     el.appendChild(pill);
   }
 
-  // scroll 讓昨天露出一點點，今天排在接近最左
-  const yesterday=new Date(today);yesterday.setDate(today.getDate()-1);
-  const ydStr=`${yesterday.getFullYear()}-${p2(yesterday.getMonth()+1)}-${p2(yesterday.getDate())}`;
-  const ydPill=el.querySelector(`[data-ds="${ydStr}"]`);
-  if(ydPill){
-    // 讓昨天的 pill 左邊對齊容器，今天自然排在緊接其後
-    const pillW=ydPill.offsetWidth;
-    el.scrollLeft=ydPill.offsetLeft - 8; // 露出昨天約半顆
+  // scroll 到選擇的日期（讓它靠左顯示），預設 scroll 到昨天讓今天在最左邊
+  const targetStr=selDate;
+  const targetPill=el.querySelector(`[data-ds="${targetStr}"]`);
+  if(targetPill){
+    // 讓選擇的日期置於畫面左側，稍微露出前一天
+    el.scrollLeft=Math.max(0, targetPill.offsetLeft - 54);
   }
 }
 
@@ -597,7 +624,7 @@ function buildCards(){
         <div class="cc-addr">📍 ${c.addr}</div>
       </div>
       <div class="cc-check">✓</div>`;
-    d.onclick=()=>{selClass=c;selTrain=null;buildCards();compute()};
+    d.onclick=()=>{selClass=c;selTrain=null;selRetTrain=null;buildCards();compute()};
     wrap.appendChild(d);
   });
 }
@@ -700,14 +727,6 @@ function renderGo(classMin,now,isToday){
   // 即時查詢按鈕
   document.getElementById('tipBtnWrap').innerHTML=`
     <div class="tip-btn-wrap">
-      <a class="tip-btn" href="https://tip.railway.gov.tw" target="_blank" rel="noopener">
-        <div class="tip-btn-left">
-          <div class="tip-btn-eyebrow">台鐵官網 · 即時資訊</div>
-          <div class="tip-btn-main">查詢台南 → 善化 時刻 / 票價 / 誤點</div>
-          <div class="tip-btn-sub">${selDate} ・ ${t.type} ・ 台南 ${t.dep} → 善化 ${t.arr}</div>
-        </div>
-        <div class="tip-btn-arrow">→</div>
-      </a>
       <a class="tip-btn" href="https://tip.railway.gov.tw/tra-tip-web/tip/tip001/tip112/gobytime" target="_blank" rel="noopener" style="background:var(--accent)">
         <div class="tip-btn-left">
           <div class="tip-btn-eyebrow">台鐵 · 即時列車動態</div>
@@ -725,6 +744,20 @@ function renderGo(classMin,now,isToday){
     else a=`<div class="alert alert-ok"><span class="alert-icon">✓</span>計畫正常，距出發還有 <strong>${ml} 分鐘</strong>。</div>`;
   }
   document.getElementById('alertBox').innerHTML=a;
+}
+
+
+function renderReturn(endMin,now,isToday){
+  const ret=selRetTrain;if(!ret)return;
+  const retArr=toMin(ret.arr),youLeave=retArr-CFG.stationToHome,yl=youLeave-now;
+  const yc=!isToday?'':(yl<0?'err':yl<=10?'warn':'ok');
+  const yn=!isToday?'出門接人時間':yl>=0?`距現在 ${yl} 分鐘後出發`:'⚠ 請立刻出發接人';
+  let html='';
+  html+=tlS('ic-yoga','🧘','',toHM(toMin(selClass.end||toHM(endMin-15))),'下課・收拾場地 15 分鐘',`<span class="chip chip-bike">腳踏車</span>`,`YouBike 騎回善化站`,false);
+  html+=tlS('ic-train','🚉','info',ret.dep,'善化上車',`<span class="chip chip-train">${ret.type}</span>`,`約 16–21 分鐘抵台南`,false);
+  html+=tlS('ic-train','🚉','ok',ret.arr,'抵達台南火車站後站',`<span class="chip chip-ret">後站出站</span>`,`Betty 抵達台南`,false);
+  html+=tlS('ic-home','🏠',yc,toHM(youLeave),yn,`<span class="chip chip-walk">騎機車</span>`,`從<strong>藝術清園</strong>出發<br>→ 台南後站接 Betty`,true);
+  document.getElementById('returnTimeline').innerHTML=html;
 }
 
 function compute(){
@@ -768,18 +801,59 @@ function compute(){
     buildTrainOpts(classMin,now,isToday);
     renderGo(classMin,now,isToday);
     const endMin=toMin(selClass.end||toHM(classMin+60))+15; // 下課後+15分鐘收拾場地
-    let ret=null;
-    for(const t of RETURN){if(toMin(t.dep)>=endMin+CFG.boardBuffer){ret=t;break}}
-    if(!ret){document.getElementById('returnTimeline').innerHTML='<div class="no-class" style="color:var(--rose)">今日已無回程班次</div>';return}
-    const retArr=toMin(ret.arr),youLeave=retArr-CFG.stationToHome,yl=youLeave-now;
-    const yc=!isToday?'':(yl<0?'err':yl<=10?'warn':'ok');
-    const yn=!isToday?'出門接人時間':yl>=0?`距現在 ${yl} 分鐘後出發`:'⚠ 請立刻出發接人';
-    let html='';
-    html+=tlS('ic-yoga','🧘','',toHM(toMin(selClass.end||toHM(classMin+60))),'下課・收拾場地 15 分鐘',`<span class="chip chip-bike">腳踏車</span>`,`YouBike 騎回善化站`,false);
-    html+=tlS('ic-train','🚉','info',ret.dep,'善化上車',`<span class="chip chip-train">${ret.type}</span>`,`約 16–21 分鐘抵台南`,false);
-    html+=tlS('ic-train','🚉','ok',ret.arr,'抵達台南火車站後站',`<span class="chip chip-ret">後站出站</span>`,`Betty 抵達台南`,false);
-    html+=tlS('ic-home','🏠',yc,toHM(youLeave),yn,`<span class="chip chip-walk">騎機車</span>`,`從<strong>藝術清園</strong>出發<br>→ 台南後站接 Betty`,true);
-    document.getElementById('returnTimeline').innerHTML=html;
+    // 找到下課後最早可搭的班次（起始 index）
+    let firstRetIdx=-1;
+    for(let i=0;i<RETURN.length;i++){if(toMin(RETURN[i].dep)>=endMin+CFG.boardBuffer){firstRetIdx=i;break}}
+    if(firstRetIdx===-1){
+      document.getElementById('returnSelector').innerHTML='';
+      document.getElementById('returnTimeline').innerHTML='<div class="no-class" style="color:var(--rose)">今日已無回程班次</div>';
+      return;
+    }
+    // 顯示 2-3 班選擇
+    const retIdxs=[];
+    for(let i=firstRetIdx;i<RETURN.length&&retIdxs.length<3;i++)retIdxs.push(i);
+    if(!selRetTrain||!retIdxs.find(i=>RETURN[i].dep===selRetTrain.dep))selRetTrain=null;
+    const retWrap=document.getElementById('returnSelector');
+    retWrap.innerHTML='';
+    retIdxs.forEach(i=>{
+      const t=RETURN[i];
+      const isSel=selRetTrain&&selRetTrain.dep===t.dep;
+      const retArr=toMin(t.arr),youLeave=retArr-CFG.stationToHome,yl=youLeave-now;
+      const ml=youLeave-now;
+      let urgHTML='';
+      if(isToday&&ml<=10&&ml>=0)urgHTML=`<div class="to-urgent warn"><span class="to-urgent-txt">⚡ 還有 ${ml} 分鐘需出發接人</span></div>`;
+      else if(isToday&&ml<0)urgHTML=`<div class="to-urgent err"><span class="to-urgent-txt">⚠ 已超過出發接人時間</span></div>`;
+      const div=document.createElement('div');
+      div.className='to'+(isSel?' sel':'');
+      div.innerHTML=`
+        <div class="to-top">
+          <div class="to-dep">${t.dep}</div>
+          <span class="to-tag ${i===firstRetIdx?'tag-rec':'tag-early'}">${i===firstRetIdx?'建議搭乘':'較晚班次'}</span>
+        </div>
+        <div class="to-bottom">
+          <div class="to-col">
+            <div class="to-col-label">車種</div>
+            <div class="to-col-val">${t.type}</div>
+            <div class="to-col-sub">抵台南 ${t.arr}</div>
+          </div>
+          <div class="to-col">
+            <div class="to-col-label">出門接人</div>
+            <div class="to-col-val">${toHM(youLeave)}</div>
+            <div class="to-col-sub">${isToday?(ml>=0?`還有 ${ml} 分`:' 已超時'):''}</div>
+          </div>
+          <div class="to-col">
+            <div class="to-col-label">Betty 抵台南</div>
+            <div class="to-col-val">${t.arr}</div>
+            <div class="to-col-sub">後站出站</div>
+          </div>
+        </div>
+        ${urgHTML}
+        <div class="to-check-row"><div class="to-check">✓</div></div>`;
+      div.onclick=()=>{selRetTrain=t;renderReturn(endMin,now,isToday);};
+      retWrap.appendChild(div);
+    });
+    if(!selRetTrain)selRetTrain=RETURN[firstRetIdx];
+    renderReturn(endMin,now,isToday);
   }
 }
 

@@ -428,11 +428,11 @@ async function loadSchedule(){
     // 將 schedule.json 格式轉換成原有的 SCHEDULE 格式
     SCHEDULE=(data.schedule||[]).map(c=>({
       date:c.date,
-      name:c.summary||c.location,
-      start:c.startTime,
-      end:c.endTime||'',
-      type:c.transport==='train'?'train':'local',
-      addr:c.address||''
+      name:c.name||c.summary||'',
+      start:c.start||c.startTime||'',
+      end:c.end||c.endTime||'',
+      type:c.type||(c.transport==='train'?'train':'local'),
+      addr:c.addr||c.address||''
     }));
     const updEl=document.getElementById('scheduleUpdatedAt');
     if(updEl)updEl.textContent=data.updatedAt||'未知';
@@ -578,7 +578,7 @@ function buildCards(){
   document.getElementById('settingsSection').style.display='';
   document.getElementById('goSection').style.display='';
 
-  if(!selClass||!list.find(c=>c.name===selClass.name&&c.start===selClass.start)){selClass=list[0];selTrain=null}
+  if(selClass&&!list.find(c=>c.name===selClass.name&&c.start===selClass.start)){selClass=null;selTrain=null}
   wrap.innerHTML='';
   list.forEach(c=>{
     const isSel=selClass&&selClass.name===c.name&&selClass.start===c.start;

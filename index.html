@@ -95,7 +95,7 @@ body{background:var(--bg);color:var(--gray1);font-family:'Noto Sans TC',sans-ser
 .tb-sec{font-family:'DM Mono',monospace;font-size:10px;color:var(--gray4);min-width:18px;text-align:right}
 
 /* ══ WEEK STRIP ══ */
-.week-strip{background:var(--white);border-bottom:1px solid var(--border);padding:8px 16px;display:flex;gap:4px;overflow-x:auto;scrollbar-width:none;position:sticky;top:73px;z-index:99}
+.week-strip{background:var(--white);border-bottom:1px solid var(--border);padding:12px 16px;display:flex;gap:4px;overflow-x:auto;scrollbar-width:none;position:sticky;top:73px;z-index:99}
 .week-strip::-webkit-scrollbar{display:none}
 .day-pill{flex-shrink:0;display:flex;flex-direction:column;align-items:center;gap:4px;padding:8px 10px;border-radius:12px;cursor:pointer;transition:all 0.12s;border:1.5px solid transparent;min-width:46px;-webkit-tap-highlight-color:transparent}
 .day-pill.has-class{border-color:var(--border2)}
@@ -384,7 +384,7 @@ body{background:var(--bg);color:var(--gray1);font-family:'Noto Sans TC',sans-ser
       <span id="stationToHome-val" style="display:none">20</span>
     </div>
     <div class="sg-card" id="cfg-bikeToAG" style="display:none">
-      <div class="sg-label">藝術清園 → 崇善路 AG
+      <div class="sg-label">藝術清園 → <span id="bikeToAG-studio">教室</span>
         <span class="sg-label-sub">騎機車時間</span>
       </div>
       <div class="sg-row">
@@ -433,7 +433,10 @@ async function loadSchedule(){
       start:c.start||c.startTime||'',
       end:c.end||c.endTime||'',
       type:c.type||(c.transport==='train'?'train':'local'),
-      addr:c.addr||c.address||''
+      addr:c.addr||c.address||'',
+      courseType:c.courseType||'',
+      location:c.location||'',
+      bikeMin:c.bikeMin||10
     }));
     const updEl=document.getElementById('scheduleUpdatedAt');
     if(updEl)updEl.textContent=data.updatedAt||'未知';
@@ -453,7 +456,11 @@ const RETURN=[
 ];
 
 // stationToHome 預設 20 分（接 Betty 回家），欄位隱藏，資料仍保留計算用
-const CFG={homeToStation:20,boardBuffer:10,bikeToYoga:15,stationToHome:20,bikeToAG:10,earlyArrival:5};
+const CFG={homeToStation:20,boardBuffer:10,bikeToYoga:15,stationToHome:20,earlyArrival:5};
+// 各教室預設機車時間（分鐘）
+const BIKE_MIN_DEFAULT={AG:10,健美:13,TR:11};
+// 當前選擇教室的機車時間（用戶可調整）
+let curBikeMin=10;
 let selDate=todayStr(),selClass=null,selTrain=null,selRetTrain=null,cd=30;
 
 function todayStr(){const d=new Date();return`${d.getFullYear()}-${p2(d.getMonth()+1)}-${p2(d.getDate())}`}
@@ -490,11 +497,18 @@ function flashSection(id){
 }
 
 function adj(k,d){
-  CFG[k]=Math.max(1,Math.min(99,CFG[k]+d));
-  document.getElementById(k+'-val').textContent=CFG[k];
+  if(k==='bikeToAG'){
+    curBikeMin=Math.max(1,Math.min(99,curBikeMin+d));
+    document.getElementById('bikeToAG-val').textContent=curBikeMin;
+    if(selClass)selClass.bikeMin=curBikeMin;
+    showToast(`騎車時間 → ${curBikeMin} 分鐘`,'⏱');
+  } else {
+    CFG[k]=Math.max(1,Math.min(99,CFG[k]+d));
+    document.getElementById(k+'-val').textContent=CFG[k];
+    const labels={homeToStation:'出發時間',boardBuffer:'候車緩衝',bikeToYoga:'腳踏車時間'};
+    showToast(`${labels[k]||'設定'} → ${CFG[k]} 分鐘`,'⏱');
+  }
   selTrain=null;
-  const labels={homeToStation:'出發時間',boardBuffer:'候車緩衝',bikeToYoga:'腳踏車時間',bikeToAG:'騎車時間'};
-  showToast(`${labels[k]||'設定'} → ${CFG[k]} 分鐘`,'⏱');
   compute();
   setTimeout(()=>flashSection('goTimeline'),50);
 }
@@ -588,7 +602,7 @@ function buildCards(){
     d.innerHTML=`
       <div class="cc-time-col">
         <div class="cc-time">${c.start}</div>
-        <div class="cc-pill ${isLocal?'pill-local':'pill-train'}">${isLocal?'🏍 台南市區':'🚆 善化搭車'}</div>
+        <div class="cc-pill ${isLocal?'pill-local':'pill-train'}">${isLocal?('🏍 '+({AG:'AG Studios','健美':'健美洋行',TR:'TriAngel'}[c.courseType]||'市區')):'🚆 善化搭車'}</div>
       </div>
       <div class="cc-sep"></div>
       <div class="cc-info">
@@ -597,7 +611,12 @@ function buildCards(){
         <div class="cc-addr">📍 ${c.addr}</div>
       </div>
       <div class="cc-check">✓</div>`;
-    d.onclick=()=>{selClass=c;selTrain=null;selRetTrain=null;buildCards();compute()};
+    d.onclick=()=>{
+      selClass=c;selTrain=null;selRetTrain=null;
+      // 切換教室時重置機車時間為該教室預設值
+      curBikeMin=c.bikeMin||BIKE_MIN_DEFAULT[c.courseType]||10;
+      buildCards();compute();
+    };
     wrap.appendChild(d);
   });
 }
@@ -751,12 +770,24 @@ function compute(){
     document.getElementById('cfg-bikeToAG').style.display='';
     ['trainSelectorSection','returnSection'].forEach(id=>document.getElementById(id).style.display='none');
     document.getElementById('goSecNum').textContent='3';
-    const buf=CFG.earlyArrival,ride=CFG.bikeToAG,leave=classMin-buf-ride,arrive=leave+ride,ml=leave-now;
+    // 動態讀取該教室的機車時間
+    curBikeMin=selClass.bikeMin||BIKE_MIN_DEFAULT[selClass.courseType]||10;
+    document.getElementById('bikeToAG-val').textContent=curBikeMin;
+    const stLabel=document.getElementById('bikeToAG-studio');
+    if(stLabel)stLabel.textContent=selClass.location||'教室';
+    const buf=CFG.earlyArrival,ride=curBikeMin,leave=classMin-buf-ride,arrive=leave+ride,ml=leave-now;
     const hc=!isToday?'':(ml<0?'err':ml<=8?'warn':'ok');
     const mn=!isToday?'出發時間':ml>=0?`距現在還有 ${ml} 分鐘`:`⚠ 已超過 ${Math.abs(ml)} 分`;
+    const studioName=selClass.location||selClass.name||'教室';
+    const studioAddr=selClass.addr||selClass.address||'';
     let html='';
-    html+=tlS('ic-home','🏠',hc,toHM(leave),mn,`<span class="chip chip-walk">騎機車</span>`,`從<strong>藝術清園</strong>出發<br>→ 崇善路 435 號 AG 紅光瑜伽`,false);
-    html+=tlS('ic-yoga','🧘','ok',toHM(arrive),`提前 ${buf} 分鐘抵達預習 ✓`,`<span class="chip chip-yoga">上課</span>`,`<strong>AG 紅光瑜伽</strong>${buf>0?`<br>上課時間 ${toHM(classMin)}`:''}`,true);
+    html+=tlS('ic-home','🏠',hc,toHM(leave),mn,`<span class="chip chip-walk">騎機車</span>`,`從<strong>藝術清園</strong>出發<br>→ ${studioName}`,false);
+    html+=tlS('ic-yoga','🧘','ok',toHM(arrive),`提前 ${buf} 分鐘抵達預習 ✓`,`<span class="chip chip-yoga">上課</span>`,`<strong>${studioName}</strong>${buf>0?`<br>上課時間 ${toHM(classMin)}`:''}`,true);
+    // 下課時間區塊
+    if(selClass.end){
+      const endMin2=toMin(selClass.end);
+      html+=tlS('ic-home','🏁','',toHM(endMin2),'下課',`<span class="chip chip-ret">下課</span>`,`Betty 下課，自行騎車回家`,false);
+    }
     document.getElementById('goTimeline').innerHTML=html;
     document.getElementById('tipBtnWrap').innerHTML='';
     let a='';

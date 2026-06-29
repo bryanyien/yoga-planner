@@ -11,6 +11,7 @@ permissions:
 jobs:
   update-schedule:
     runs-on: ubuntu-latest
+
     steps:
       - name: Checkout 程式碼
         uses: actions/checkout@v4
@@ -32,6 +33,7 @@ jobs:
         run: |
           git config user.name  "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
+          git pull --rebase origin main
           git add schedule.json
           git diff --staged --quiet || git commit -m "chore: 自動更新課表 $(date +'%Y-%m-%d')"
           git push

@@ -1,21 +1,6 @@
 {
-  "updatedAt": "2026-09-07 07:26",
+  "updatedAt": "2026-09-14 07:51",
   "schedule": [
-    {
-      "id": "0in45l11j938hg10ijhts10lp6_20260907T023000Z",
-      "name": "AG 慢流動",
-      "courseType": "AG",
-      "label": "AG 課程",
-      "location": "AG Studios 台南崇善",
-      "address": "台南市東區崇善路 435 號 1F",
-      "station": null,
-      "type": "local",
-      "bikeMin": 10,
-      "date": "2026-09-07",
-      "weekday": "一",
-      "start": "10:30",
-      "end": "11:30"
-    },
     {
       "id": "7dclq5svef0ueo4of3q2s6aodl_20260917T011500Z",
       "name": "AG 輪瑜伽",
